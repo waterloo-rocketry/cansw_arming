@@ -14,7 +14,7 @@ void output_init(void){
     
     // Indicator Buzzer
     TRISB4 = 0; // set B4 as an output for the indicator buzzer
-    LATB4 = 1; // turn off the buzzer
+    LATB4 = 0; // turn off the buzzer
     
     // Altimeter Arming
     TRISC3 = 0; // set C3 as an output for arming A1

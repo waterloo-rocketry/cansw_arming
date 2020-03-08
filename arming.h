@@ -16,14 +16,22 @@ extern "C" {
 #define WHITE_LED_OFF() (LATC5 = 1)
     
 // Buzzer
-#define BUZZER_ON() (LATB4 = 0)
-#define BUZZER_OFF() (LATB4 = 1)
+#define BUZZER_ON() (LATB4 = 1)
+#define BUZZER_OFF() (LATB4 = 0)
 
 // Altimeters
 #define ARM_A1() (LATC3 = 1)
 #define DISARM_A1() (LATC3 = 0)
 #define ARM_A2() (LATC2 = 1)
 #define DISARM_A2() (LATC2 = 0)
+    
+// Voltage Monitoring
+#define BATTERY_1_PIN   channel_ANA0
+#define BATTER_2_PIN    channel_ANA1
+#define A1_MAIN_PIN     channel_ANB3
+#define A1_DROUGE_PIN   channel_ANB2
+#define A2_MAIN_PIN     channel_ANB1
+#define A2_DROUGE_PIN   channel_ANB0
 
 
   void output_init(void);
