@@ -16,7 +16,7 @@ int main(int argc, char** argv) {
     timer0_init();    
     output_init(); // initialize our outputs
     
-    uart_rx_init(9600); //initialize the UART module
+    uart1_rx_init(9600, _XTAL_FREQ); //initialize the UART module
     
     ADCC_Initialize(); // MCC generated functions
     FVR_Initialize();
@@ -61,5 +61,9 @@ static void __interrupt() interrupt_handler(){
     if (PIE3bits.TMR0IE == 1 && PIR3bits.TMR0IF == 1) {
         timer0_handle_interrupt();
         PIR3bits.TMR0IF = 0;
+    }
+    
+    if (PIE3bits.U1RXIE == 1 && PIR3bits.U1RXIF == 1){
+        uart1_handle_interupt();
     }
 }

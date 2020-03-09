@@ -6,8 +6,12 @@ extern "C" {
 #endif
 
 #include <xc.h>
+#include <stdint.h>
+#include "canlib/util/safe_ring_buffer.h"
 
-    void uart_rx_init(int baud);
+    void uart1_rx_init(uint32_t baud, uint32_t osc_freq);
+    
+    void uart1_handle_interupt(void);
 
 
 #ifdef	__cplusplus

@@ -7,6 +7,7 @@ extern "C" {
  
 #include <xc.h>
 
+
 // LEDs
 #define RED_LED_ON() (LATC7 = 0)
 #define RED_LED_OFF() (LATC7 = 1)
