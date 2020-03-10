@@ -28,8 +28,6 @@ int main(int argc, char** argv) {
     
     unsigned long next_switch_time = 0;
     uint8_t on = 0;
-
-    
     
     while(1){
         
@@ -51,6 +49,8 @@ int main(int argc, char** argv) {
             }
         }
         battery_1_voltage = ADCC_GetSingleConversion(BATTERY_1_PIN)*3.72;
+        
+        parse_altitude();
         
         
     }

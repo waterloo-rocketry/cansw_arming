@@ -1,13 +1,15 @@
 #include "altitude_parsing.h"
 
-uint8_t rx_pool[32]; //32 bytes should be plenty
+char rx_pool[32]; //32 bytes should be plenty
 
 static srb_ctx_t rx_buf;
 
 void uart1_rx_init(uint32_t baud, uint32_t osc_freq){
+    // we will use -1 to indicate no recived altitude
+    altitude = -1;
     
     // set up a ring buffer for receiving data
-    srb_init(&rx_buf, rx_pool, sizeof(rx_pool), sizeof(uint8_t));
+    srb_init(&rx_buf, rx_pool, sizeof(rx_pool), sizeof(char));
     
     U1CON0bits.BRGS = 0; //set up normal speed for baud rate generator
     U1CON0bits.ABDEN = 0; //disable Auto baud detect
@@ -32,4 +34,22 @@ void uart1_rx_init(uint32_t baud, uint32_t osc_freq){
 
 void uart1_handle_interupt(void){
     srb_push(&rx_buf, &U1RXB);
+}
+
+void parse_altitude(void){
+    static char string[7] = "";
+    static char element;
+    
+    while(!srb_is_empty(&rx_buf)){
+        srb_pop(&rx_buf, &element);
+        if(element != '\n'){
+            strncat(string, &element, 1);
+        }
+        else if(strlen(string) > 0){ //if we hit a line ending, and our string has a number to read:
+            sscanf(string, "%d", &altitude);    //read the altitude from the received string
+            memset(string, 0, strlen(string));  //and clear the string so we can start again
+        }      
+    }
+
+    
 }

@@ -7,11 +7,16 @@ extern "C" {
 
 #include <xc.h>
 #include <stdint.h>
+#include <string.h>
 #include "canlib/util/safe_ring_buffer.h"
+    
+    int32_t altitude;
 
     void uart1_rx_init(uint32_t baud, uint32_t osc_freq);
     
     void uart1_handle_interupt(void);
+    
+    void parse_altitude(void);
 
 
 #ifdef	__cplusplus
