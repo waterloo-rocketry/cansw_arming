@@ -55,7 +55,7 @@ void parse_altitude(void){
     while(!srb_is_empty(&rx_buf)){
         srb_pop(&rx_buf, &element);
         test = element;
-        if(element & 0xF0 != 0){    //if the second digit of the hex value is non zero we know it is not some form of whitespace
+        if((element & 0xF0) != 0){    //if the second digit of the hex value is non zero we know it is not some form of whitespace
             strncat(string, &element, 1);
         }
         else if(strlen(string) > 0){ //if we hit a line ending, and our string has a number to read:
