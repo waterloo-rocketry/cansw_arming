@@ -11,6 +11,8 @@ extern "C" {
 #include "canlib/util/safe_ring_buffer.h"
     
     int32_t altitude;
+    char test;
+    char string[16];
 
     void uart1_rx_init(uint32_t baud, uint32_t osc_freq);
     

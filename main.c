@@ -13,6 +13,7 @@
 
 int main(int argc, char** argv) {
     
+    osc_init();
     timer0_init();    
     output_init(); // initialize our outputs
     
@@ -37,12 +38,12 @@ int main(int argc, char** argv) {
                 //DISARM_A1();
                 //ARM_A2();
                 WHITE_LED_OFF();
-                BLUE_LED_ON();
+                //BLUE_LED_ON();
                 on = 0;
             }
             else{
                 WHITE_LED_ON();
-                BLUE_LED_OFF();
+                //BLUE_LED_OFF();
                 //ARM_A1();
                 //DISARM_A2();
                 on = 1;
@@ -62,8 +63,15 @@ static void __interrupt() interrupt_handler(){
         timer0_handle_interrupt();
         PIR3bits.TMR0IF = 0;
     }
-    
-    if (PIE3bits.U1RXIE == 1 && PIR3bits.U1RXIF == 1){
-        uart1_handle_interupt();
+    if(U1ERRIRbits.FERIF == 1 || U1ERRIRbits.RXFOIF){   //should probably do something if there is an error
+        RED_LED_ON();
     }
+    else if (PIE3bits.U1RXIE == 1 && PIR3bits.U1RXIF == 1){
+        uart1_handle_interupt();
+        PIR3bits.U1RXIF = 0;
+    }
+    else if(PIR3bits.U1EIF == 1){   //should probably do something if there is an error
+        PIR3bits.U1EIF = 0;
+    }
+    
 }

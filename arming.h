@@ -36,6 +36,9 @@ extern "C" {
 
 
   void output_init(void);
+  
+  void osc_init(void);
+  
 
 #ifdef	__cplusplus
 }
