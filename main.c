@@ -15,7 +15,7 @@
 
 #define _XTAL_FREQ 12000000 //12MHz
 
-static void can_msg_handler(can_msg_t *msg);
+static void can_msg_handler(const can_msg_t *msg);
 
 static enum ARM_STATE alt_1_arm_state = DISARMED;  //this should be ARMED for flight code
 static enum ARM_STATE alt_2_arm_state = DISARMED;
@@ -92,8 +92,8 @@ int main(int argc, char** argv) {
             build_arm_stat_msg(millis(), 
                                2, 
                                alt_2_arm_state,
-                               (uint16_t)(ADCC_GetSingleConversion(A2_DROGUE_PIN)*3.72),
-                               (uint16_t)(ADCC_GetSingleConversion(A2_MAIN_PIN)*3.72),
+                               (uint16_t)(ADCC_GetSingleConversion(A2_DROGUE_PIN))*3.72,
+                               (uint16_t)(ADCC_GetSingleConversion(A2_MAIN_PIN))*3.72,
                                &alt_2_arm_stat_msg);
             txb_enqueue(&alt_2_arm_stat_msg);
             
@@ -135,12 +135,39 @@ static void __interrupt() interrupt_handler(){
     
 }
 
-static void can_msg_handler(can_msg_t *msg) {
+static void can_msg_handler(const can_msg_t *msg) {
     uint16_t msg_type = get_message_type(msg);
+     
+    // ignore messages that were sent from this board
+    if (get_board_unique_id(msg) == BOARD_UNIQUE_ID) {
+        return;
+    }
+    
+    // declare this in advance cause we can't declare it inside the switch
+    uint8_t alt_num = 0;
+    enum ARM_STATE desired_arm_state = ARMED;
+    
     switch (msg_type) {
-        
+        case MSG_ALT_ARM_CMD:
+            get_req_arm_state(msg, &alt_num, &desired_arm_state);
+            if(alt_num == 1) { alt_1_arm_state = desired_arm_state; }
+            if(alt_num == 2) { alt_2_arm_state = desired_arm_state; }
+            break;
+            
+        case MSG_LEDS_ON:
+            RED_LED_ON();
+            BLUE_LED_ON();
+            WHITE_LED_ON();
+            break;
+
+        case MSG_LEDS_OFF:
+            RED_LED_OFF();
+            BLUE_LED_OFF();
+            WHITE_LED_OFF();
+            break;
+            
         default:
-            // send a message or something
+            // this is where we go for all the messages we don't care about
             break;
     }
 }
