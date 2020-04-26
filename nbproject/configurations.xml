@@ -1,12 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configurationDescriptor version="65">
   <logicalFolder name="root" displayName="root" projectFiles="true">
-    <logicalFolder name="f1" displayName="canlib" projectFiles="true">
+    <logicalFolder name="canlib" displayName="canlib" projectFiles="true">
+      <logicalFolder name="pic18f26k83" displayName="pic18f26k83" projectFiles="true">
+        <itemPath>canlib/pic18f26k83/pic18f26k83_can.h</itemPath>
+        <itemPath>canlib/pic18f26k83/pic18f26k83_timer.h</itemPath>
+      </logicalFolder>
+      <logicalFolder name="util" displayName="util" projectFiles="true">
+        <itemPath>canlib/util/can_rcv_buffer.c</itemPath>
+        <itemPath>canlib/util/can_rcv_buffer.h</itemPath>
+        <itemPath>canlib/util/can_tx_buffer.h</itemPath>
+        <itemPath>canlib/util/safe_ring_buffer.h</itemPath>
+        <itemPath>canlib/util/timing_util.h</itemPath>
+      </logicalFolder>
       <itemPath>canlib/can.h</itemPath>
+      <itemPath>canlib/can_common.c</itemPath>
       <itemPath>canlib/can_common.h</itemPath>
       <itemPath>canlib/message_types.h</itemPath>
-      <itemPath>canlib/util/timing_util.h</itemPath>
-      <itemPath>canlib/pic18f26k83/pic18f26k83_can.h</itemPath>
     </logicalFolder>
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
@@ -103,7 +113,7 @@
         <property key="asmlist" value="true"/>
         <property key="default-bitfield-type" value="true"/>
         <property key="default-char-type" value="true"/>
-        <property key="define-macros" value=""/>
+        <property key="define-macros" value="BOARD_UNIQUE_ID=BOARD_ID_ARMING"/>
         <property key="disable-optimizations" value="true"/>
         <property key="extra-include-directories" value="canlib"/>
         <property key="favor-optimization-for" value="-speed,+space"/>

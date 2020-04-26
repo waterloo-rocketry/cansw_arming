@@ -1,23 +1,24 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "canlib\can.h"
-#include "canlib\can_common.h"
-#include "canlib\pic18f26k83\pic18f26k83_can.h"
-#include "canlib\message_types.h"
-#include "canlib\util\timing_util.h"
-#include "canlib\util\can_tx_buffer.h"
-#include "canlib\pic18f26k83\pic18f26k83_timer.h"
+#include "canlib/can.h"
+#include "canlib/can_common.h"
+#include "canlib/pic18f26k83/pic18f26k83_can.h"
+#include "canlib/message_types.h"
+#include "canlib/util/timing_util.h"
+#include "canlib/util/can_tx_buffer.h"
+#include "canlib/pic18f26k83/pic18f26k83_timer.h"
 
 #include "arming.h"
 #include "altitude_parsing.h"
-#include "mcc_generated_files\mcc.h"
+#include "mcc_generated_files/mcc.h"
 
 #define _XTAL_FREQ 12000000 //12MHz
 
-#define TOGGLE_TIME 500
-
 static void can_msg_handler(can_msg_t *msg);
+
+static enum ARM_STATE alt_1_arm_state = DISARMED;  //this should be ARMED for flight code
+static enum ARM_STATE alt_2_arm_state = DISARMED;
 
 // Memory pool for CAN transmit buffer
 uint8_t tx_pool[100];
@@ -54,16 +55,16 @@ int main(int argc, char** argv) {
     // set up CAN tx buffer
     txb_init(tx_pool, sizeof(tx_pool), can_send, can_send_rdy);
     
-    //DISARM_A1(); //this is so that they don't always buzz during testing, REMOVE BEFORE FLIGHT
-    //DISARM_A2();
     
-    unsigned long next_switch_time = 0;
+    uint32_t last_millis = millis();
     uint8_t on = 0;
     
+    
+    /***************Main Loop***************/
     while(1){
         
-        if(millis() > next_switch_time){
-            next_switch_time = millis() + TOGGLE_TIME;
+        if(millis() > last_millis + MAX_LOOP_TIME_DIFF_ms){
+            last_millis = millis();
             if(on){
                 //DISARM_A1();
                 //ARM_A2();
@@ -78,10 +79,34 @@ int main(int argc, char** argv) {
                 //DISARM_A2();
                 on = 1;
             }
+            can_msg_t alt_1_arm_stat_msg;
+            build_arm_stat_msg(millis(), 
+                               1, 
+                               alt_1_arm_state,
+                               (uint16_t)ADCC_GetSingleConversion(A1_DROGUE_PIN)*3.72,
+                               (uint16_t)ADCC_GetSingleConversion(A1_MAIN_PIN)*3.72,
+                               &alt_1_arm_stat_msg);
+            txb_enqueue(&alt_1_arm_stat_msg);
+            
+            can_msg_t alt_2_arm_stat_msg;
+            build_arm_stat_msg(millis(), 
+                               2, 
+                               alt_2_arm_state,
+                               (uint16_t)(ADCC_GetSingleConversion(A2_DROGUE_PIN)*3.72),
+                               (uint16_t)(ADCC_GetSingleConversion(A2_MAIN_PIN)*3.72),
+                               &alt_2_arm_stat_msg);
+            txb_enqueue(&alt_2_arm_stat_msg);
+            
+            parse_altitude();
+            
+            ADCC_GetSingleConversion(BATTERY_1_PIN)*3.72;
         }
-        ADCC_GetSingleConversion(BATTERY_1_PIN)*3.72;
         
-        parse_altitude();
+        if(alt_1_arm_state == DISARMED) DISARM_A1(); // set io to arm state of altimeter 1
+        else ARM_A1();
+        
+        if(alt_2_arm_state == DISARMED) DISARM_A2(); // set io to arm state of altimeter 2
+        else ARM_A2();
         
         // send queued messages
         txb_heartbeat();
@@ -93,6 +118,9 @@ static void __interrupt() interrupt_handler(){
     if (PIE3bits.TMR0IE == 1 && PIR3bits.TMR0IF == 1) {
         timer0_handle_interrupt();
         PIR3bits.TMR0IF = 0;
+    }
+    if (PIR5) {
+        can_handle_interrupt();
     }
     if(U1ERRIRbits.FERIF == 1 || U1ERRIRbits.RXFOIF){   //should probably do something if there is an error
         RED_LED_ON();

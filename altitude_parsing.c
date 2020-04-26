@@ -7,8 +7,7 @@ static srb_ctx_t rx_buf;
 
 void uart1_rx_init(uint32_t baud, uint32_t osc_freq){
     // we will use -1 to indicate no recived altitude
-    altitude = 3;
-    test = 'a';
+    altitude = -1;
     memset(string, 0, strlen(string));
     // set up a ring buffer for receiving data
     srb_init(&rx_buf, rx_pool, sizeof(rx_pool), sizeof(char));
@@ -54,7 +53,6 @@ void parse_altitude(void){
     
     while(!srb_is_empty(&rx_buf)){
         srb_pop(&rx_buf, &element);
-        test = element;
         if((element & 0xF0) != 0){    //if the second digit of the hex value is non zero we know it is not some form of whitespace
             strncat(string, &element, 1);
         }

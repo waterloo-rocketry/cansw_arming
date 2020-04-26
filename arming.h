@@ -7,7 +7,9 @@ extern "C" {
  
 #include <xc.h>
 
-
+// Time between main loop code execution
+#define MAX_LOOP_TIME_DIFF_ms 250
+    
 // LEDs
 #define RED_LED_ON() (LATC7 = 0)
 #define RED_LED_OFF() (LATC7 = 1)
@@ -30,9 +32,9 @@ extern "C" {
 #define BATTERY_1_PIN   channel_ANA0
 #define BATTER_2_PIN    channel_ANA1
 #define A1_MAIN_PIN     channel_ANB3
-#define A1_DROUGE_PIN   channel_ANB2
+#define A1_DROGUE_PIN   channel_ANB2
 #define A2_MAIN_PIN     channel_ANB1
-#define A2_DROUGE_PIN   channel_ANB0
+#define A2_DROGUE_PIN   channel_ANB0
 
 
   void output_init(void);
