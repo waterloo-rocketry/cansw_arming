@@ -65,20 +65,16 @@ int main(int argc, char** argv) {
         
         if(millis() > last_millis + MAX_LOOP_TIME_DIFF_ms){
             last_millis = millis();
+            
             if(on){
-                //DISARM_A1();
-                //ARM_A2();
                 WHITE_LED_OFF();
-                //BLUE_LED_ON();
                 on = 0;
             }
             else{
                 WHITE_LED_ON();
-                //BLUE_LED_OFF();
-                //ARM_A1();
-                //DISARM_A2();
                 on = 1;
             }
+            
             can_msg_t alt_1_arm_stat_msg;
             build_arm_stat_msg(millis(), 
                                1, 
@@ -97,16 +93,47 @@ int main(int argc, char** argv) {
                                &alt_2_arm_stat_msg);
             txb_enqueue(&alt_2_arm_stat_msg);
             
-            parse_altitude();
+            can_msg_t bat_1_v_msg;
+            build_analog_data_msg(millis(), 
+                                  SENSOR_ARM_BATT_1, 
+                                  (uint16_t)(ADCC_GetSingleConversion(BATTERY_1_PIN))*3.72,
+                                  &bat_1_v_msg);
+            txb_enqueue(&bat_1_v_msg);
             
-            ADCC_GetSingleConversion(BATTERY_1_PIN)*3.72;
+            can_msg_t bat_2_v_msg;
+            build_analog_data_msg(millis(), 
+                                  SENSOR_ARM_BATT_2, 
+                                  (uint16_t)(ADCC_GetSingleConversion(BATTERY_2_PIN))*3.72,
+                                  &bat_2_v_msg);
+            txb_enqueue(&bat_2_v_msg);
+            
         }
         
-        if(alt_1_arm_state == DISARMED) DISARM_A1(); // set io to arm state of altimeter 1
-        else ARM_A1();
+        parse_altitude();
+        if (new_altitude_available()){
+            can_msg_t altitude_msg;
+            build_altitude_data_msg(millis(), get_altitude(), &altitude_msg);
+            txb_enqueue(&altitude_msg);
+        }
+        // set io to arm state of altimeter 1
+        if(alt_1_arm_state == DISARMED) {
+            DISARM_A1();
+            RED_LED_OFF();
+        }
+        else {
+            ARM_A1();
+            RED_LED_ON();
+        }
         
-        if(alt_2_arm_state == DISARMED) DISARM_A2(); // set io to arm state of altimeter 2
-        else ARM_A2();
+        // set io to arm state of altimeter 2
+        if(alt_2_arm_state == DISARMED) {
+            DISARM_A2();
+            BLUE_LED_OFF();
+        }
+        else {
+            ARM_A2();
+            BLUE_LED_ON();
+        }
         
         // send queued messages
         txb_heartbeat();

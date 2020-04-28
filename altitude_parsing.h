@@ -9,10 +9,11 @@ extern "C" {
 #include <stdint.h>
 #include <string.h>
 #include "canlib/util/safe_ring_buffer.h"
-    
-    int32_t altitude;
-    char string[16];
 
+    int32_t get_altitude();
+    
+    bool new_altitude_available();
+    
     void uart1_rx_init(uint32_t baud, uint32_t osc_freq);
     
     void uart1_handle_interupt(void);

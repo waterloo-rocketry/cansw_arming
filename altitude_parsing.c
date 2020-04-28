@@ -1,9 +1,21 @@
 #include "altitude_parsing.h"
 
+static int32_t altitude = -999;
+static bool new_altitude = false;
+static char string[16];
+
 char rx_pool[32]; //32 bytes should be plenty
 
 static srb_ctx_t rx_buf;
 
+int32_t get_altitude(){
+    new_altitude = false;
+    return altitude;
+}
+
+bool new_altitude_available(){
+    return new_altitude;
+}
 
 void uart1_rx_init(uint32_t baud, uint32_t osc_freq){
     // we will use -1 to indicate no recived altitude
@@ -43,12 +55,10 @@ void uart1_rx_init(uint32_t baud, uint32_t osc_freq){
 
 void uart1_handle_interupt(void){
     char rcv = U1RXB;
-    //test = rcv;
     srb_push(&rx_buf, &rcv);
 }
 
 void parse_altitude(void){
-    //static char string[7] = "";
     static char element;
     
     while(!srb_is_empty(&rx_buf)){
@@ -57,8 +67,9 @@ void parse_altitude(void){
             strncat(string, &element, 1);
         }
         else if(strlen(string) > 0){ //if we hit a line ending, and our string has a number to read:
-            sscanf(string, "%d", &altitude);    //read the altitude from the received string
+            altitude = strtol(string, NULL, 10);    //read the altitude from the received string
             memset(string, 0, strlen(string));  //and clear the string so we can start again
+            new_altitude = true;
         }      
     }
 
