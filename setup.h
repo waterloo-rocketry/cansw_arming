@@ -9,7 +9,7 @@
 #define MAX_LOOP_TIME_DIFF_ms 1000
 
 #define UNDERVOLTAGE_THRESHOLD 5000 //in mV
-        
+
 // LEDs
 #define RED_LED_ON() (LATC7 = 0)
 #define RED_LED_OFF() (LATC7 = 1)
