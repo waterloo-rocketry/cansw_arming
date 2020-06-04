@@ -7,7 +7,6 @@
 
 // Time between main loop code execution
 #define MAX_LOOP_TIME_DIFF_ms 1000
-
 #define UNDERVOLTAGE_THRESHOLD 5000 //in mV
 
 // LEDs
@@ -35,6 +34,8 @@
   void output_init(void);
 
   void osc_init(void);
+
+  void indicator_buzzer_heartbeat(void);
 
   void indicator_buzzer_heartbeat(void);
 
