@@ -61,13 +61,14 @@ int main(int argc, char** argv) {
     
     /***************Main Loop***************/
     while(1){
-        
+         
         if(millis() > last_millis + MAX_LOOP_TIME_DIFF_ms){
             last_millis = millis();
             
             // Toggle the white LED
             LATC5 = ~PORTCbits.RC5;
-
+       
+            /***********Status Messages***********/
             can_msg_t alt_1_arm_stat_msg;
             build_arm_stat_msg(millis(), 
                                1, 
@@ -130,6 +131,9 @@ int main(int argc, char** argv) {
         
         // send queued messages
         txb_heartbeat();
+        
+        //Mag-switch Arming Alert 
+        indicator_buzzer_heartbeat();
     }
     return (EXIT_SUCCESS);
 }
