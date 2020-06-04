@@ -7,6 +7,7 @@
 
 // Time between main loop code execution
 #define MAX_LOOP_TIME_DIFF_ms 1000
+<<<<<<< HEAD
 
 #define UNDERVOLTAGE_THRESHOLD 5000 //in mV
 <<<<<<< HEAD:setup.h
@@ -14,6 +15,10 @@
 =======
         
 >>>>>>> Finnish initial code for the mag switch state alert buzzer.:arming.h
+=======
+#define UNDERVOLTAGE_THRESHOLD 5000 //in mV
+    
+>>>>>>> Begin code to use signal buzzer to indicate which mag switches are on.
 // LEDs
 #define RED_LED_ON() (LATC7 = 0)
 #define RED_LED_OFF() (LATC7 = 1)
@@ -39,6 +44,8 @@
   void output_init(void);
 
   void osc_init(void);
+  
+  void indicator_buzzer_heartbeat(void);
 
   void indicator_buzzer_heartbeat(void);
 

@@ -61,7 +61,6 @@ int main(int argc, char** argv) {
 
     /***************Main Loop***************/
     while(1){
-
         if(millis() > last_millis + MAX_LOOP_TIME_DIFF_ms){
             last_millis = millis();
 
