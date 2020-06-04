@@ -61,10 +61,15 @@ int main(int argc, char** argv) {
 
     /***************Main Loop***************/
     while(1){
+<<<<<<< HEAD
+=======
+         
+>>>>>>> Begin code to use signal buzzer to indicate which mag switches are on.
         if(millis() > last_millis + MAX_LOOP_TIME_DIFF_ms){
             last_millis = millis();
 
             // Toggle the white LED
+<<<<<<< HEAD
 <<<<<<< HEAD
             LATC5 = ~PORTCbits.RC5;
 
@@ -74,6 +79,14 @@ int main(int argc, char** argv) {
             
             /***********Status Messages***********/
 >>>>>>> Finnish initial code for the mag switch state alert buzzer.
+=======
+            LATC5 = ~LATC5;
+            
+            //Mag-switch Arming Alert 
+            indicator_buzzer_heartbeat();
+            
+            /***********Status Messages***********/
+>>>>>>> Begin code to use signal buzzer to indicate which mag switches are on.
             can_msg_t alt_1_arm_stat_msg;
             build_arm_stat_msg(millis(),
                                1,
