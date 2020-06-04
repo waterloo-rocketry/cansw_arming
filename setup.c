@@ -36,3 +36,23 @@ void osc_init(void){
         while (1) {}
     }
 }
+
+
+static uint32_t last_millis = 0;
+void indicator_buzzer_heartbeat(void){
+    
+    if((uint16_t)(ADCC_GetSingleConversion(BATTERY_1_PIN))*3.72 > UNDERVOLTAGE_THRESHOLD && millis() - last_millis < 750) BUZZER_ON();
+    
+    else if(millis() - last_millis >= 750 && millis() - last_millis < 1000) BUZZER_OFF();
+    
+    else if((uint16_t)(ADCC_GetSingleConversion(BATTERY_2_PIN))*3.72 > UNDERVOLTAGE_THRESHOLD && millis() - last_millis < 1250) BUZZER_ON();
+    
+    else if(millis() - last_millis >= 1250 && millis() - last_millis < 1500) BUZZER_OFF();
+    
+    else if((uint16_t)(ADCC_GetSingleConversion(BATTERY_2_PIN))*3.72 > UNDERVOLTAGE_THRESHOLD && millis() - last_millis < 1750) BUZZER_ON();
+    
+    else if(millis() - last_millis >= 1750 && millis() - last_millis < 2000) BUZZER_OFF();
+
+    else if(millis() - last_millis >= 2000) last_millis = millis();
+    
+}
