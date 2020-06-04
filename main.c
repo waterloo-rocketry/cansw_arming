@@ -62,10 +62,11 @@ int main(int argc, char** argv) {
     
     /***************Main Loop***************/
     while(1){
-        
+         
         if(millis() > last_millis + MAX_LOOP_TIME_DIFF_ms){
             last_millis = millis();
             
+            //Heartbeat LED
             if(on){
                 WHITE_LED_OFF();
                 on = 0;
@@ -75,6 +76,10 @@ int main(int argc, char** argv) {
                 on = 1;
             }
             
+            //Mag-switch Arming Alert 
+            indicator_buzzer_heartbeat();
+            
+            /***********Status Messages***********/
             can_msg_t alt_1_arm_stat_msg;
             build_arm_stat_msg(millis(), 
                                1, 

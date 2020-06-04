@@ -6,9 +6,12 @@ extern "C" {
 #endif
  
 #include <xc.h>
+#include "canlib/pic18f26k83/pic18f26k83_timer.h"
+#include "mcc_generated_files/mcc.h"
 
 // Time between main loop code execution
 #define MAX_LOOP_TIME_DIFF_ms 1000
+#define UNDERVOLTAGE_THRESHOLD 5000 //in mV
     
 // LEDs
 #define RED_LED_ON() (LATC7 = 0)
@@ -40,6 +43,8 @@ extern "C" {
   void output_init(void);
   
   void osc_init(void);
+  
+  void indicator_buzzer_heartbeat(void);
   
 
 #ifdef	__cplusplus
