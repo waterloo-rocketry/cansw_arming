@@ -37,6 +37,6 @@
   void osc_init(void);
   
   void indicator_buzzer_heartbeat(void);
-  
+
 #endif	/* ARMING_H */
 
