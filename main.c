@@ -76,8 +76,6 @@ int main(int argc, char** argv) {
                 on = 1;
             }
             
-            //Mag-switch Arming Alert 
-            indicator_buzzer_heartbeat();
             
             /***********Status Messages***********/
             can_msg_t alt_1_arm_stat_msg;
@@ -142,6 +140,9 @@ int main(int argc, char** argv) {
         
         // send queued messages
         txb_heartbeat();
+        
+        //Mag-switch Arming Alert 
+        indicator_buzzer_heartbeat();
     }
     return (EXIT_SUCCESS);
 }
