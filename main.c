@@ -65,8 +65,15 @@ int main(int argc, char** argv) {
             last_millis = millis();
 
             // Toggle the white LED
+<<<<<<< HEAD
             LATC5 = ~PORTCbits.RC5;
 
+=======
+            LATC5 = ~LATC5;
+            
+            
+            /***********Status Messages***********/
+>>>>>>> Finnish initial code for the mag switch state alert buzzer.
             can_msg_t alt_1_arm_stat_msg;
             build_arm_stat_msg(millis(),
                                1,
@@ -129,8 +136,13 @@ int main(int argc, char** argv) {
 
         // send queued messages
         txb_heartbeat();
+<<<<<<< HEAD
 
         //Mag-switch Arming Alert
+=======
+        
+        //Mag-switch Arming Alert 
+>>>>>>> Finnish initial code for the mag switch state alert buzzer.
         indicator_buzzer_heartbeat();
     }
     return (EXIT_SUCCESS);
