@@ -129,13 +129,8 @@ int main(int argc, char** argv) {
 
         // send queued messages
         txb_heartbeat();
-<<<<<<< HEAD
 
         //Mag-switch Arming Alert
-=======
-
-        //Mag-switch Arming Alert
->>>>>>> Begin code to use signal buzzer to indicate which mag switches are on.
         indicator_buzzer_heartbeat();
     }
     return (EXIT_SUCCESS);
