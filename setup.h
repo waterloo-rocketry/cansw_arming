@@ -10,6 +10,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 #define UNDERVOLTAGE_THRESHOLD 5000 //in mV
 <<<<<<< HEAD:setup.h
@@ -23,6 +24,11 @@
 #define UNDERVOLTAGE_THRESHOLD 5000 //in mV
     
 >>>>>>> Begin code to use signal buzzer to indicate which mag switches are on.
+=======
+
+#define UNDERVOLTAGE_THRESHOLD 5000 //in mV
+        
+>>>>>>> Finnish initial code for the mag switch state alert buzzer.
 =======
 
 #define UNDERVOLTAGE_THRESHOLD 5000 //in mV

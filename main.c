@@ -82,8 +82,6 @@ int main(int argc, char** argv) {
 =======
             LATC5 = ~LATC5;
             
-            //Mag-switch Arming Alert 
-            indicator_buzzer_heartbeat();
             
             /***********Status Messages***********/
 >>>>>>> Begin code to use signal buzzer to indicate which mag switches are on.
@@ -150,8 +148,13 @@ int main(int argc, char** argv) {
         // send queued messages
         txb_heartbeat();
 <<<<<<< HEAD
+<<<<<<< HEAD
 
         //Mag-switch Arming Alert
+=======
+        
+        //Mag-switch Arming Alert 
+>>>>>>> Finnish initial code for the mag switch state alert buzzer.
 =======
         
         //Mag-switch Arming Alert 
