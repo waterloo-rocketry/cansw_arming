@@ -130,6 +130,9 @@ int main(int argc, char** argv) {
 
         // send queued messages
         txb_heartbeat();
+
+        //Mag-switch Arming Alert
+        indicator_buzzer_heartbeat();
     }
     return (EXIT_SUCCESS);
 }
