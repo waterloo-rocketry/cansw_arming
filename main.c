@@ -9,7 +9,7 @@
 #include "canlib/util/can_tx_buffer.h"
 #include "canlib/pic18f26k83/pic18f26k83_timer.h"
 
-#include "arming.h"
+#include "setup.h"
 #include "altitude_parsing.h"
 #include "mcc_generated_files/mcc.h"
 
@@ -57,7 +57,6 @@ int main(int argc, char** argv) {
     
     
     uint32_t last_millis = millis();
-    uint8_t on = 0;
     
     
     /***************Main Loop***************/
@@ -66,21 +65,15 @@ int main(int argc, char** argv) {
         if(millis() > last_millis + MAX_LOOP_TIME_DIFF_ms){
             last_millis = millis();
             
-            if(on){
-                WHITE_LED_OFF();
-                on = 0;
-            }
-            else{
-                WHITE_LED_ON();
-                on = 1;
-            }
-            
+            // Toggle the white LED
+            LATC5 = ~LATC5;
+
             can_msg_t alt_1_arm_stat_msg;
             build_arm_stat_msg(millis(), 
                                1, 
                                alt_1_arm_state,
-                               (uint16_t)ADCC_GetSingleConversion(A1_DROGUE_PIN)*3.72,
-                               (uint16_t)ADCC_GetSingleConversion(A1_MAIN_PIN)*3.72,
+                               (uint16_t)ADCC_GetSingleConversion(A1_DROGUE_PIN)*ANALOG_SCALLER,
+                               (uint16_t)ADCC_GetSingleConversion(A1_MAIN_PIN)*ANALOG_SCALLER,
                                &alt_1_arm_stat_msg);
             txb_enqueue(&alt_1_arm_stat_msg);
             
@@ -88,22 +81,22 @@ int main(int argc, char** argv) {
             build_arm_stat_msg(millis(), 
                                2, 
                                alt_2_arm_state,
-                               (uint16_t)(ADCC_GetSingleConversion(A2_DROGUE_PIN))*3.72,
-                               (uint16_t)(ADCC_GetSingleConversion(A2_MAIN_PIN))*3.72,
+                               (uint16_t)(ADCC_GetSingleConversion(A2_DROGUE_PIN))*ANALOG_SCALLER,
+                               (uint16_t)(ADCC_GetSingleConversion(A2_MAIN_PIN))*ANALOG_SCALLER,
                                &alt_2_arm_stat_msg);
             txb_enqueue(&alt_2_arm_stat_msg);
             
             can_msg_t bat_1_v_msg;
             build_analog_data_msg(millis(), 
                                   SENSOR_ARM_BATT_1, 
-                                  (uint16_t)(ADCC_GetSingleConversion(BATTERY_1_PIN))*3.72,
+                                  (uint16_t)(ADCC_GetSingleConversion(BATTERY_1_PIN))*ANALOG_SCALLER,
                                   &bat_1_v_msg);
             txb_enqueue(&bat_1_v_msg);
             
             can_msg_t bat_2_v_msg;
             build_analog_data_msg(millis(), 
                                   SENSOR_ARM_BATT_2, 
-                                  (uint16_t)(ADCC_GetSingleConversion(BATTERY_2_PIN))*3.72,
+                                  (uint16_t)(ADCC_GetSingleConversion(BATTERY_2_PIN))*ANALOG_SCALLER,
                                   &bat_2_v_msg);
             txb_enqueue(&bat_2_v_msg);
             
@@ -150,9 +143,9 @@ static void __interrupt() interrupt_handler(){
         can_handle_interrupt();
     }
     if(U1ERRIRbits.FERIF == 1 || U1ERRIRbits.RXFOIF){   //should probably do something if there is an error
-        RED_LED_ON();
+
     }
-    else if (PIE3bits.U1RXIE == 1 && PIR3bits.U1RXIF == 1){
+    else if (PIR3bits.U1RXIF == 1){
         uart1_handle_interupt();
         PIR3bits.U1RXIF = 0;
     }
@@ -169,7 +162,7 @@ static void can_msg_handler(const can_msg_t *msg) {
     if (get_board_unique_id(msg) == BOARD_UNIQUE_ID) {
         return;
     }
-    
+
     // declare this in advance cause we can't declare it inside the switch
     uint8_t alt_num = 0;
     enum ARM_STATE desired_arm_state = ARMED;

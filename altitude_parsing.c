@@ -8,18 +8,17 @@ char rx_pool[32]; //32 bytes should be plenty
 
 static srb_ctx_t rx_buf;
 
-int32_t get_altitude(){
+int32_t get_altitude(void){
     new_altitude = false;
     return altitude;
 }
 
-bool new_altitude_available(){
+bool new_altitude_available(void){
     return new_altitude;
 }
 
 void uart1_rx_init(uint32_t baud, uint32_t osc_freq){
-    // we will use -1 to indicate no recived altitude
-    altitude = -1;
+    
     memset(string, 0, strlen(string));
     // set up a ring buffer for receiving data
     srb_init(&rx_buf, rx_pool, sizeof(rx_pool), sizeof(char));
@@ -59,11 +58,19 @@ void uart1_handle_interupt(void){
 }
 
 void parse_altitude(void){
+//    This function parses altitude data from a Stratologger CF altimeter
+//    the data is just ASCII numbers followed by whitespace
+//    For example:
+//    1267
+//    1328
+//    1451
+//    -6
+
     static char element;
     
     while(!srb_is_empty(&rx_buf)){
         srb_pop(&rx_buf, &element);
-        if((element & 0xF0) != 0){    //if the second digit of the hex value is non zero we know it is not some form of whitespace
+        if((element & 0xF0) != 0 && strlen(string) < 15){    //if the second digit of the hex value is non zero we know it is not some form of whitespace
             strncat(string, &element, 1);
         }
         else if(strlen(string) > 0){ //if we hit a line ending, and our string has a number to read:

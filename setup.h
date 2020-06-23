@@ -1,9 +1,5 @@
 #ifndef ARMING_H
 #define	ARMING_H
-
-#ifdef	__cplusplus
-extern "C" {
-#endif
  
 #include <xc.h>
 
@@ -36,15 +32,12 @@ extern "C" {
 #define A2_MAIN_PIN     channel_ANB1
 #define A2_DROGUE_PIN   channel_ANB0
 
+#define ANALOG_SCALLER 3.72
+
 
   void output_init(void);
   
   void osc_init(void);
-  
-
-#ifdef	__cplusplus
-}
-#endif
 
 #endif	/* ARMING_H */
 

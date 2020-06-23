@@ -1,4 +1,4 @@
-#include "arming.h"
+    #include "setup.h"
 
 
 void output_init(void){
