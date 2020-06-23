@@ -45,18 +45,18 @@ void indicator_buzzer_heartbeat(void){
 
     int loop_time = millis() - indicator_buzzer_last_millis;
 
-    if((uint16_t)(ADCC_GetSingleConversion(BATTERY_1_PIN))*3.72 > UNDERVOLTAGE_THRESHOLD && loop_time < 750)
+    if((uint16_t)(ADCC_GetSingleConversion(channel_BATTERY_1))*3.72 > UNDERVOLTAGE_THRESHOLD && loop_time < 750)
         BUZZER_ON();
 
     else if(loop_time >= 750 && loop_time < 1000) BUZZER_OFF();
 
-    else if((uint16_t)(ADCC_GetSingleConversion(BATTERY_2_PIN))*3.72 > UNDERVOLTAGE_THRESHOLD && loop_time >= 1000 && loop_time < 1250)
+    else if((uint16_t)(ADCC_GetSingleConversion(channel_BATTERY_2))*3.72 > UNDERVOLTAGE_THRESHOLD && loop_time >= 1000 && loop_time < 1250)
         BUZZER_ON();
 
     else if(loop_time >= 1250 && loop_time < 1500)
         BUZZER_OFF();
 
-    else if((uint16_t)(ADCC_GetSingleConversion(BATTERY_2_PIN))*3.72 > UNDERVOLTAGE_THRESHOLD && loop_time >= 1500 && loop_time < 1750)
+    else if((uint16_t)(ADCC_GetSingleConversion(channel_BATTERY_2))*3.72 > UNDERVOLTAGE_THRESHOLD && loop_time >= 1500 && loop_time < 1750)
         BUZZER_ON();
 
     else if(loop_time >= 1750 && loop_time < 2000)
