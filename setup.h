@@ -25,13 +25,6 @@
 #define DISARM_A2() (LATC2 = 0)
     
 // Voltage Monitoring
-#define BATTERY_1_PIN   channel_ANA0
-#define BATTERY_2_PIN    channel_ANA1
-#define A1_MAIN_PIN     channel_ANB3
-#define A1_DROGUE_PIN   channel_ANB2
-#define A2_MAIN_PIN     channel_ANB1
-#define A2_DROGUE_PIN   channel_ANB0
-
 #define ANALOG_SCALLER 3.72
 
 
