@@ -66,7 +66,7 @@ int main(int argc, char** argv) {
             last_millis = millis();
             
             // Toggle the white LED
-            LATC5 = ~LATC5;
+            LATC5 = ~PORTCbits.RC5;
 
             can_msg_t alt_1_arm_stat_msg;
             build_arm_stat_msg(millis(), 
