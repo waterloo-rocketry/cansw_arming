@@ -68,7 +68,6 @@ int main(int argc, char** argv) {
             // Toggle the white LED
             LATC5 = ~LATC5;
             
-            
             /***********Status Messages***********/
             can_msg_t alt_1_arm_stat_msg;
             build_arm_stat_msg(millis(), 
