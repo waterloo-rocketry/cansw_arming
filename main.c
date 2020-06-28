@@ -72,8 +72,8 @@ int main(int argc, char** argv) {
             build_arm_stat_msg(millis(), 
                                1, 
                                alt_1_arm_state,
-                               (uint16_t)ADCC_GetSingleConversion(channel_A1_DROGUE)*ANALOG_SCALLER,
-                               (uint16_t)ADCC_GetSingleConversion(channel_A1_MAIN)*ANALOG_SCALLER,
+                               (uint16_t)(ADCC_GetSingleConversion(channel_A1_DROGUE)*ANALOG_SCALAR),
+                               (uint16_t)(ADCC_GetSingleConversion(channel_A1_MAIN)*ANALOG_SCALAR),
                                &alt_1_arm_stat_msg);
             txb_enqueue(&alt_1_arm_stat_msg);
             
@@ -81,22 +81,22 @@ int main(int argc, char** argv) {
             build_arm_stat_msg(millis(), 
                                2, 
                                alt_2_arm_state,
-                               (uint16_t)(ADCC_GetSingleConversion(channel_A2_DROGUE))*ANALOG_SCALLER,
-                               (uint16_t)(ADCC_GetSingleConversion(channel_A2_MAIN))*ANALOG_SCALLER,
+                               (uint16_t)(ADCC_GetSingleConversion(channel_A2_DROGUE)*ANALOG_SCALAR),
+                               (uint16_t)(ADCC_GetSingleConversion(channel_A2_MAIN)*ANALOG_SCALAR),
                                &alt_2_arm_stat_msg);
             txb_enqueue(&alt_2_arm_stat_msg);
             
             can_msg_t bat_1_v_msg;
             build_analog_data_msg(millis(), 
                                   SENSOR_ARM_BATT_1, 
-                                  (uint16_t)(ADCC_GetSingleConversion(channel_BATTERY_1))*ANALOG_SCALLER,
+                                  (uint16_t)(ADCC_GetSingleConversion(channel_BATTERY_1)*ANALOG_SCALAR),
                                   &bat_1_v_msg);
             txb_enqueue(&bat_1_v_msg);
             
             can_msg_t bat_2_v_msg;
             build_analog_data_msg(millis(), 
                                   SENSOR_ARM_BATT_2, 
-                                  (uint16_t)(ADCC_GetSingleConversion(channel_BATTERY_2))*ANALOG_SCALLER,
+                                  (uint16_t)(ADCC_GetSingleConversion(channel_BATTERY_2)*ANALOG_SCALAR),
                                   &bat_2_v_msg);
             txb_enqueue(&bat_2_v_msg);
             
@@ -146,7 +146,7 @@ static void __interrupt() interrupt_handler(){
 
     }
     else if (PIR3bits.U1RXIF == 1){
-        uart1_handle_interupt();
+        uart1_handle_interrupt();
         PIR3bits.U1RXIF = 0;
     }
     else if(PIR3bits.U1EIF == 1){   //should probably do something if there is an error

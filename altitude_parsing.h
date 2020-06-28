@@ -12,7 +12,7 @@ bool new_altitude_available(void);
     
 void uart1_rx_init(uint32_t baud, uint32_t osc_freq);
     
-void uart1_handle_interupt(void);
+void uart1_handle_interrupt(void);
     
 void parse_altitude(void);
 

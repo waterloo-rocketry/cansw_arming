@@ -25,7 +25,7 @@
 #define DISARM_A2() (LATC2 = 0)
     
 // Voltage Monitoring
-#define ANALOG_SCALLER 3.72
+#define ANALOG_SCALAR 3.72
 
 
   void output_init(void);

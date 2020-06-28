@@ -52,7 +52,7 @@ void uart1_rx_init(uint32_t baud, uint32_t osc_freq){
     
 }
 
-void uart1_handle_interupt(void){
+void uart1_handle_interrupt(void){
     char rcv = U1RXB;
     srb_push(&rx_buf, &rcv);
 }
@@ -65,6 +65,7 @@ void parse_altitude(void){
 //    1328
 //    1451
 //    -6
+//    Altitude data is received in ft
 
     static char element;
     
