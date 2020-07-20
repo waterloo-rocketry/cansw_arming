@@ -42,28 +42,45 @@ void osc_init(void){
 
 
 static uint32_t indicator_buzzer_last_millis = 0;
+static uint8_t indicator_state = 0;
 void indicator_buzzer_heartbeat(void){
     
     int loop_time = millis() - indicator_buzzer_last_millis;
     
-    if((uint16_t)(ADCC_GetSingleConversion(channel_BATTERY_1))*3.72 > UNDERVOLTAGE_THRESHOLD && loop_time < 750) 
+    if(indicator_state != 0 && loop_time < 750 
+        && (uint16_t)ADCC_GetSingleConversion(channel_BATTERY_1)*ANALOG_SCALLER > UNDERVOLTAGE_THRESHOLD){
         BUZZER_ON();
+        indicator_state = 0;
+    }
     
-    else if(loop_time >= 750 && loop_time < 1000) BUZZER_OFF();
-    
-    else if((uint16_t)(ADCC_GetSingleConversion(channel_BATTERY_2))*3.72 > UNDERVOLTAGE_THRESHOLD && loop_time >= 1000 && loop_time < 1250) 
-        BUZZER_ON();
-    
-    else if(loop_time >= 1250 && loop_time < 1500) 
+    else if(indicator_state != 1 && loop_time >= 750 && loop_time < 1000){
         BUZZER_OFF();
+        indicator_state = 1;
+    }
     
-    else if((uint16_t)(ADCC_GetSingleConversion(channel_BATTERY_2))*3.72 > UNDERVOLTAGE_THRESHOLD && loop_time >= 1500 && loop_time < 1750) 
+    else if(indicator_state != 2 && loop_time >= 1000 && loop_time < 1250 
+        && (uint16_t)ADCC_GetSingleConversion(channel_BATTERY_2)*ANALOG_SCALLER > UNDERVOLTAGE_THRESHOLD){ 
         BUZZER_ON();
+        indicator_state = 2;
+    }
     
-    else if(loop_time >= 1750 && loop_time < 2000) 
+    else if(indicator_state != 3 && loop_time >= 1250 && loop_time < 1500){
         BUZZER_OFF();
-
-    else if(loop_time >= 2000) 
+        indicator_state = 3;
+    }
+    
+    else if(indicator_state != 4 && loop_time >= 1500 && loop_time < 1750 
+        && (uint16_t)ADCC_GetSingleConversion(channel_BATTERY_2)*ANALOG_SCALLER > UNDERVOLTAGE_THRESHOLD){ 
+        BUZZER_ON();
+        indicator_state = 4;
+    }
+    
+    else if(indicator_state != 5 && loop_time >= 1750 && loop_time < 2000){
+        BUZZER_OFF();
+        indicator_state = 5;
+    }
+    else if(loop_time >= 2000){
         indicator_buzzer_last_millis = millis();
+    }
     
 }
