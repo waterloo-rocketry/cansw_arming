@@ -82,5 +82,4 @@ void indicator_buzzer_heartbeat(void){
     else if(loop_time >= 2000){
         indicator_buzzer_last_millis = millis();
     }
-
 }
