@@ -17,18 +17,18 @@
 
 static void can_msg_handler(const can_msg_t *msg);
 
-static enum ARM_STATE alt_1_arm_state = DISARMED;  //this should be ARMED for flight code
+static enum ARM_STATE alt_1_arm_state = DISARMED;  // this should be ARMED for flight code
 static enum ARM_STATE alt_2_arm_state = DISARMED;
 
 // Memory pool for CAN transmit buffer
 uint8_t tx_pool[100];
 
 int main(int argc, char** argv) {
-    //init functions
+    // init functions
     osc_init();
     timer0_init();
     output_init(); // initialize our outputs
-    uart1_rx_init(9600, _XTAL_FREQ); //initialize the UART module
+    uart1_rx_init(9600, _XTAL_FREQ); // initialize the UART module
     // MCC generated functions
     ADCC_Initialize();
     FVR_Initialize();
@@ -129,8 +129,13 @@ int main(int argc, char** argv) {
 
         // send queued messages
         txb_heartbeat();
+<<<<<<< HEAD
 
         //Mag-switch Arming Alert
+=======
+        
+        // Mag-switch Arming Alert 
+>>>>>>> fix some of the formating issues from Wendi and Jacob.
         indicator_buzzer_heartbeat();
     }
     return (EXIT_SUCCESS);
@@ -144,14 +149,14 @@ static void __interrupt() interrupt_handler(){
     if (PIR5) {
         can_handle_interrupt();
     }
-    if(U1ERRIRbits.FERIF == 1 || U1ERRIRbits.RXFOIF){   //should probably do something if there is an error
+    if(U1ERRIRbits.FERIF == 1 || U1ERRIRbits.RXFOIF){   // should probably do something if there is an error
 
     }
     else if (PIR3bits.U1RXIF == 1){
         uart1_handle_interrupt();
         PIR3bits.U1RXIF = 0;
     }
-    else if(PIR3bits.U1EIF == 1){   //should probably do something if there is an error
+    else if(PIR3bits.U1EIF == 1){   // should probably do something if there is an error
         PIR3bits.U1EIF = 0;
     }
 
