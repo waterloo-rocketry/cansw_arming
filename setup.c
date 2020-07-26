@@ -47,7 +47,7 @@ void indicator_buzzer_heartbeat(void){
     int loop_time = millis() - indicator_buzzer_last_millis;
     
     if(indicator_state != 0 && loop_time < 750 
-        && (uint16_t)ADCC_GetSingleConversion(channel_BATTERY_1)*ANALOG_SCALLER > UNDERVOLTAGE_THRESHOLD){
+        && (uint16_t)ADCC_GetSingleConversion(channel_BATTERY_1)*ANALOG_SCALAR > UNDERVOLTAGE_THRESHOLD){
         BUZZER_ON();
         indicator_state = 0;
     }
@@ -58,7 +58,7 @@ void indicator_buzzer_heartbeat(void){
     }
     
     else if(indicator_state != 2 && loop_time >= 1000 && loop_time < 1250 
-        && (uint16_t)ADCC_GetSingleConversion(channel_BATTERY_2)*ANALOG_SCALLER > UNDERVOLTAGE_THRESHOLD){ 
+        && (uint16_t)ADCC_GetSingleConversion(channel_BATTERY_2)*ANALOG_SCALAR > UNDERVOLTAGE_THRESHOLD){ 
         BUZZER_ON();
         indicator_state = 2;
     }
@@ -69,7 +69,7 @@ void indicator_buzzer_heartbeat(void){
     }
     
     else if(indicator_state != 4 && loop_time >= 1500 && loop_time < 1750 
-        && (uint16_t)ADCC_GetSingleConversion(channel_BATTERY_2)*ANALOG_SCALLER > UNDERVOLTAGE_THRESHOLD){ 
+        && (uint16_t)ADCC_GetSingleConversion(channel_BATTERY_2)*ANALOG_SCALAR > UNDERVOLTAGE_THRESHOLD){ 
         BUZZER_ON();
         indicator_state = 4;
     }
