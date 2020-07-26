@@ -8,7 +8,7 @@
 // Time between main loop code execution
 #define MAX_LOOP_TIME_DIFF_ms 1000
 
-#define UNDERVOLTAGE_THRESHOLD 5000 //in mV
+#define UNDERVOLTAGE_THRESHOLD 5000 // in mV
 
 // LEDs
 #define RED_LED_ON() (LATC7 = 0)
@@ -31,12 +31,11 @@
 // Voltage Monitoring
 #define ANALOG_SCALAR 3.72
 
-
-  void output_init(void);
+void output_init(void);
   
-  void osc_init(void);
+void osc_init(void);
   
-  void indicator_buzzer_heartbeat(void);
+void indicator_buzzer_heartbeat(void);
 
 #endif	/* ARMING_H */
 

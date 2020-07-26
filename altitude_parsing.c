@@ -4,7 +4,7 @@ static int32_t altitude = -999;
 static bool new_altitude = false;
 static char string[16];
 
-char rx_pool[32]; //32 bytes should be plenty
+char rx_pool[32]; // 32 bytes should be plenty
 
 static srb_ctx_t rx_buf;
 
@@ -23,22 +23,22 @@ void uart1_rx_init(uint32_t baud, uint32_t osc_freq){
     // set up a ring buffer for receiving data
     srb_init(&rx_buf, rx_pool, sizeof(rx_pool), sizeof(char));
     
-    U1CON0bits.RXEN = 1; //enable receiver
-    U1CON0bits.BRGS = 0; //set up normal speed for baud rate generator
-    U1CON0bits.ABDEN = 0; //disable Auto baud detect
+    U1CON0bits.RXEN = 1; // enable receiver
+    U1CON0bits.BRGS = 0; // set up normal speed for baud rate generator
+    U1CON0bits.ABDEN = 0; // disable Auto baud detect
     
     // not going to touch TXEN
     
-    U1CON0bits.MODE = 0b0000; //Asynchronous 8-bit UART mode
+    U1CON0bits.MODE = 0b0000; // Asynchronous 8-bit UART mode
     
-    U1CON2bits.RUNOVF = 1; //keep running on overflow, never stop receiving
-    U1CON2bits.FLO = 0; //disable flow control.
+    U1CON2bits.RUNOVF = 1; // keep running on overflow, never stop receiving
+    U1CON2bits.FLO = 0; // disable flow control.
     // set baud rate:
     uint16_t baud_rate_gen = (osc_freq / (16 * baud)) - 1;
     U1BRGH = baud_rate_gen >> 8 & 0xFF;
     U1BRGL = baud_rate_gen & 0xFF;
     
-    U1RXPPS = (0b010 << 3) | //port C
+    U1RXPPS = (0b010 << 3) | // port C
               (0b100);       // pin 4
     
     ANSELC4 = 0;
@@ -71,12 +71,12 @@ void parse_altitude(void){
     
     while(!srb_is_empty(&rx_buf)){
         srb_pop(&rx_buf, &element);
-        if((element & 0xF0) != 0 && strlen(string) < 15){    //if the second digit of the hex value is non zero we know it is not some form of whitespace
+        if((element & 0xF0) != 0 && strlen(string) < 15){    // if the second digit of the hex value is non zero we know it is not some form of whitespace
             strncat(string, &element, 1);
         }
-        else if(strlen(string) > 0){ //if we hit a line ending, and our string has a number to read:
-            altitude = strtol(string, NULL, 10);    //read the altitude from the received string
-            memset(string, 0, strlen(string));  //and clear the string so we can start again
+        else if(strlen(string) > 0){ // if we hit a line ending, and our string has a number to read:
+            altitude = strtol(string, NULL, 10);    // read the altitude from the received string
+            memset(string, 0, strlen(string));  // and clear the string so we can start again
             new_altitude = true;
         }      
     }

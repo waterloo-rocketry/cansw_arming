@@ -29,13 +29,13 @@ void output_init(void){
 }
 
 void osc_init(void){
-    //Select external oscillator with PLL of 1:1
+    // Select external oscillator with PLL of 1:1
     OSCCON1 = 0b01110000;
-    //wait until the clock switch has happened
+    // wait until the clock switch has happened
     while (OSCCON3bits.ORDY == 0)  {}
-    //if the currently active clock (CON2) isn't the selected clock (CON1)
+    // if the currently active clock (CON2) isn't the selected clock (CON1)
     if (OSCCON2 != 0b01110000) {
-        //infinite loop, something is broken, what even is an assert()?
+        // infinite loop, something is broken, what even is an assert()?
         while (1) {}
     }
 }
@@ -80,6 +80,5 @@ void indicator_buzzer_heartbeat(void){
     }
     else if(loop_time >= 2000){
         indicator_buzzer_last_millis = millis();
-    }
-    
+    } 
 }
