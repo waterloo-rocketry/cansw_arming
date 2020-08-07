@@ -26,18 +26,18 @@ uint8_t tx_pool[100];
 int main(int argc, char** argv) {
     // init functions
     osc_init();
-    timer0_init();    
+    timer0_init();
     output_init(); // initialize our outputs
     uart1_rx_init(9600, _XTAL_FREQ); // initialize the UART module
     // MCC generated functions
-    ADCC_Initialize(); 
+    ADCC_Initialize();
     FVR_Initialize();
-    
+
     // enable global interupts
     INTCON0bits.GIE = 1;
-    
+
     /***********set up CAN**********/
-    
+
     // Set up CAN TX
     TRISC0 = 0;
     RC0PPS = 0x33;
@@ -46,7 +46,7 @@ int main(int argc, char** argv) {
     TRISC1 = 1;
     ANSELC1 = 0;
     CANRXPPS = 0x11;
-    
+
     // set up CAN module
     can_timing_t can_setup;
     can_generate_timing_params(_XTAL_FREQ, &can_setup);
@@ -54,55 +54,55 @@ int main(int argc, char** argv) {
     can_init(&can_setup, can_msg_handler);
     // set up CAN tx buffer
     txb_init(tx_pool, sizeof(tx_pool), can_send, can_send_rdy);
-    
-    
+
+
     uint32_t last_millis = millis();
-    
-    
+
+
     /***************Main Loop***************/
     while(1){
-         
+
         if(millis() > last_millis + MAX_LOOP_TIME_DIFF_ms){
             last_millis = millis();
-            
+
             // Toggle the white LED
             LATC5 = ~PORTCbits.RC5;
 
             /***********Status Messages***********/
             can_msg_t alt_1_arm_stat_msg;
-            build_arm_stat_msg(millis(), 
-                               1, 
+            build_arm_stat_msg(millis(),
+                               1,
                                alt_1_arm_state,
                                (uint16_t)(ADCC_GetSingleConversion(channel_A1_DROGUE)*ANALOG_SCALAR),
                                (uint16_t)(ADCC_GetSingleConversion(channel_A1_MAIN)*ANALOG_SCALAR),
                                &alt_1_arm_stat_msg);
             txb_enqueue(&alt_1_arm_stat_msg);
-            
+
             can_msg_t alt_2_arm_stat_msg;
-            build_arm_stat_msg(millis(), 
-                               2, 
+            build_arm_stat_msg(millis(),
+                               2,
                                alt_2_arm_state,
                                (uint16_t)(ADCC_GetSingleConversion(channel_A2_DROGUE)*ANALOG_SCALAR),
                                (uint16_t)(ADCC_GetSingleConversion(channel_A2_MAIN)*ANALOG_SCALAR),
                                &alt_2_arm_stat_msg);
             txb_enqueue(&alt_2_arm_stat_msg);
-            
+
             can_msg_t bat_1_v_msg;
-            build_analog_data_msg(millis(), 
-                                  SENSOR_ARM_BATT_1, 
+            build_analog_data_msg(millis(),
+                                  SENSOR_ARM_BATT_1,
                                   (uint16_t)(ADCC_GetSingleConversion(channel_BATTERY_1)*ANALOG_SCALAR),
                                   &bat_1_v_msg);
             txb_enqueue(&bat_1_v_msg);
-            
+
             can_msg_t bat_2_v_msg;
-            build_analog_data_msg(millis(), 
-                                  SENSOR_ARM_BATT_2, 
+            build_analog_data_msg(millis(),
+                                  SENSOR_ARM_BATT_2,
                                   (uint16_t)(ADCC_GetSingleConversion(channel_BATTERY_2)*ANALOG_SCALAR),
                                   &bat_2_v_msg);
             txb_enqueue(&bat_2_v_msg);
-            
+
         }
-        
+
         parse_altitude();
         if (new_altitude_available()){
             can_msg_t altitude_msg;
@@ -118,7 +118,7 @@ int main(int argc, char** argv) {
             ARM_A1();
             RED_LED_ON();
         }
-        
+
         // set io to arm state of altimeter 2
         if(alt_2_arm_state == DISARMED) {
             DISARM_A2();
@@ -128,11 +128,11 @@ int main(int argc, char** argv) {
             ARM_A2();
             BLUE_LED_ON();
         }
-        
+
         // send queued messages
         txb_heartbeat();
-        
-        // Mag-switch Arming Alert 
+
+        // Mag-switch Arming Alert
         indicator_buzzer_heartbeat();
     }
     return (EXIT_SUCCESS);
@@ -156,12 +156,12 @@ static void __interrupt() interrupt_handler(){
     else if(PIR3bits.U1EIF == 1){   // should probably do something if there is an error
         PIR3bits.U1EIF = 0;
     }
-    
+
 }
 
 static void can_msg_handler(const can_msg_t *msg) {
     uint16_t msg_type = get_message_type(msg);
-     
+
     // ignore messages that were sent from this board
     if (get_board_unique_id(msg) == BOARD_UNIQUE_ID) {
         return;
@@ -170,14 +170,14 @@ static void can_msg_handler(const can_msg_t *msg) {
     // declare this in advance cause we can't declare it inside the switch
     uint8_t alt_num = 0;
     enum ARM_STATE desired_arm_state = ARMED;
-    
+
     switch (msg_type) {
         case MSG_ALT_ARM_CMD:
             get_req_arm_state(msg, &alt_num, &desired_arm_state);
             if(alt_num == 1) { alt_1_arm_state = desired_arm_state; }
             if(alt_num == 2) { alt_2_arm_state = desired_arm_state; }
             break;
-            
+
         case MSG_LEDS_ON:
             RED_LED_ON();
             BLUE_LED_ON();
@@ -189,7 +189,7 @@ static void can_msg_handler(const can_msg_t *msg) {
             BLUE_LED_OFF();
             WHITE_LED_OFF();
             break;
-            
+
         default:
             // this is where we go for all the messages we don't care about
             break;
