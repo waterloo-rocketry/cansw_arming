@@ -130,12 +130,17 @@ int main(int argc, char** argv) {
         // send queued messages
         txb_heartbeat();
 <<<<<<< HEAD
+<<<<<<< HEAD
 
         //Mag-switch Arming Alert
 =======
-        
-        // Mag-switch Arming Alert 
+
+        // Mag-switch Arming Alert
 >>>>>>> fix some of the formating issues from Wendi and Jacob.
+=======
+
+        // Mag-switch Arming Alert
+>>>>>>> Remove trailing whitespace.
         indicator_buzzer_heartbeat();
     }
     return (EXIT_SUCCESS);
