@@ -42,44 +42,52 @@ void osc_init(void){
 
 
 static uint32_t indicator_buzzer_last_millis = 0;
-static bool buzzer_state = false;
+static bool buzzer_on = false;
 void indicator_buzzer_heartbeat(void){
 
     int loop_time = millis() - indicator_buzzer_last_millis;
 
-    if(buzzer_state == false && loop_time < 750
-        && (uint16_t)ADCC_GetSingleConversion(channel_BATTERY_1)*ANALOG_SCALAR > UNDERVOLTAGE_THRESHOLD){
+    if(buzzer_on == false && loop_time < 750
+        && battery1_active()){
         BUZZER_ON();
-        buzzer_state = true;
+        buzzer_on = true;
     }
 
-    else if(buzzer_state == true && loop_time >= 750 && loop_time < 1000){
+    else if(buzzer_on == true && loop_time >= 750 && loop_time < 1000){
         BUZZER_OFF();
-        buzzer_state = false;
+        buzzer_on = false;
     }
 
-    else if(buzzer_state == false && loop_time >= 1000 && loop_time < 1250
-        && (uint16_t)ADCC_GetSingleConversion(channel_BATTERY_2)*ANALOG_SCALAR > UNDERVOLTAGE_THRESHOLD){
+    else if(buzzer_on == false && loop_time >= 1000 && loop_time < 1250
+        && battery2_active()){
         BUZZER_ON();
-        buzzer_state = true;
+        buzzer_on = true;
     }
 
-    else if(buzzer_state == true && loop_time >= 1250 && loop_time < 1500){
+    else if(buzzer_on == true && loop_time >= 1250 && loop_time < 1500){
         BUZZER_OFF();
-        buzzer_state = false;
+        buzzer_on = false;
     }
 
-    else if(buzzer_state == false && loop_time >= 1500 && loop_time < 1750
-        && (uint16_t)ADCC_GetSingleConversion(channel_BATTERY_2)*ANALOG_SCALAR > UNDERVOLTAGE_THRESHOLD){
+    else if(buzzer_on == false && loop_time >= 1500 && loop_time < 1750
+        && battery2_active()){
         BUZZER_ON();
-        buzzer_state = true;
+        buzzer_on = true;
     }
 
-    else if(buzzer_state == true && loop_time >= 1750 && loop_time < 2000){
+    else if(buzzer_on == true && loop_time >= 1750 && loop_time < 2000){
         BUZZER_OFF();
-        buzzer_state = false;
+        buzzer_on = false;
     }
     else if(loop_time >= 2000){
         indicator_buzzer_last_millis = millis();
     }
+}
+
+bool battery1_active(void){
+    return (uint16_t)ADCC_GetSingleConversion(channel_BATTERY_1)*ANALOG_SCALAR > UNDERVOLTAGE_THRESHOLD;
+}
+
+bool battery2_active(void){
+    return (uint16_t)ADCC_GetSingleConversion(channel_BATTERY_2)*ANALOG_SCALAR > UNDERVOLTAGE_THRESHOLD;
 }
