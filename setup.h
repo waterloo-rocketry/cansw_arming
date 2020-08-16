@@ -37,5 +37,9 @@ void osc_init(void);
 
 void indicator_buzzer_heartbeat(void);
 
+bool battery1_active(void);
+
+bool battery2_active(void);
+
 #endif	/* ARMING_H */
 
