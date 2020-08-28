@@ -40,7 +40,6 @@ void osc_init(void){
     }
 }
 
-
 static uint32_t indicator_buzzer_last_millis = 0;
 static bool buzzer_on = false;
 void indicator_buzzer_heartbeat(void){

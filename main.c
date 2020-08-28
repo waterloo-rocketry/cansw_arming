@@ -66,6 +66,7 @@ int main(int argc, char** argv) {
 
             // Toggle the white LED
             LATC5 = ~PORTCbits.RC5;
+
             /***********Status Messages***********/
             can_msg_t alt_1_arm_stat_msg;
             build_arm_stat_msg(millis(),
@@ -129,18 +130,8 @@ int main(int argc, char** argv) {
 
         // send queued messages
         txb_heartbeat();
-<<<<<<< HEAD
-<<<<<<< HEAD
 
         //Mag-switch Arming Alert
-=======
-
-        // Mag-switch Arming Alert
->>>>>>> fix some of the formating issues from Wendi and Jacob.
-=======
-
-        // Mag-switch Arming Alert
->>>>>>> Remove trailing whitespace.
         indicator_buzzer_heartbeat();
     }
     return (EXIT_SUCCESS);
