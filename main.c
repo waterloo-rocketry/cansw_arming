@@ -11,11 +11,13 @@
 
 #include "setup.h"
 #include "altitude_parsing.h"
+#include "error_checks.h"
 #include "mcc_generated_files/mcc.h"
 
 #define _XTAL_FREQ 12000000 //12MHz
 
 static void can_msg_handler(const can_msg_t *msg);
+static void send_status_ok(void);
 
 static enum ARM_STATE alt_1_arm_state = DISARMED;  // this should be ARMED for flight code
 static enum ARM_STATE alt_2_arm_state = DISARMED;
@@ -68,6 +70,15 @@ int main(int argc, char** argv) {
             LATC5 = ~PORTCbits.RC5;
 
             /***********Status Messages***********/
+            
+            //General Status Messages
+            bool status_ok = true;
+            status_ok &= check_battery_voltage_error();
+            if (status_ok){
+                send_status_ok();
+            }
+            
+            //Altimeter Status Messages
             can_msg_t alt_1_arm_stat_msg;
             build_arm_stat_msg(millis(),
                                1,
@@ -85,7 +96,8 @@ int main(int argc, char** argv) {
                                (uint16_t)(ADCC_GetSingleConversion(channel_A2_MAIN)*ANALOG_SCALAR),
                                &alt_2_arm_stat_msg);
             txb_enqueue(&alt_2_arm_stat_msg);
-
+            
+            //Battery Status Messages
             can_msg_t bat_1_v_msg;
             build_analog_data_msg(millis(),
                                   SENSOR_ARM_BATT_1,
@@ -193,4 +205,13 @@ static void can_msg_handler(const can_msg_t *msg) {
             // this is where we go for all the messages we don't care about
             break;
     }
+}
+
+// Send a CAN message with nominal status
+static void send_status_ok(void) {
+    can_msg_t board_stat_msg;
+    build_board_stat_msg(millis(), E_NOMINAL, NULL, 0, &board_stat_msg);
+
+    // send it off at low priority
+    txb_enqueue(&board_stat_msg);
 }
