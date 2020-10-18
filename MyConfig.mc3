@@ -2251,7 +2251,7 @@
       </entry>
       <entry>
          <key class="com.microchip.mcc.core.tokenManager.SettingKey" moduleName="System Module" registerAlias="CONFIG3L" settingAlias="WDTE"/>
-         <value>OFF</value>
+         <value>ON</value>
       </entry>
       <entry>
          <key class="com.microchip.mcc.core.tokenManager.SettingKey" moduleName="INTERNAL OSCILLATOR" registerAlias="OSCTUNE" settingAlias="TUN"/>
@@ -2715,7 +2715,7 @@
       </entry>
       <entry>
          <key class="com.microchip.mcc.core.tokenManager.CustomKey" moduleName="WWDT" name="wwdtPeriod"/>
-         <value>2.11406</value>
+         <value>0.00103</value>
       </entry>
       <entry>
          <key class="com.microchip.mcc.core.tokenManager.SettingKey" moduleName="WWDT" registerAlias="WDTCON1" settingAlias="WDTWINDOW"/>
@@ -4731,7 +4731,7 @@
       </entry>
       <entry>
          <key class="com.microchip.mcc.core.tokenManager.SettingKey" moduleName="System Module" registerAlias="CONFIG3H" settingAlias="WDTCCS"/>
-         <value>SC</value>
+         <value>LFINTOSC</value>
       </entry>
       <entry>
          <key class="com.microchip.mcc.core.tokenManager.OptionKey" moduleName="Pin Module" registerAlias="SLRCONB" settingAlias="SLRB1" alias="maximum"/>
@@ -4947,7 +4947,7 @@
       </entry>
       <entry>
          <key class="com.microchip.mcc.core.tokenManager.RegisterKey" moduleName="System Module" registerAlias="CONFIG3H"/>
-         <value>63</value>
+         <value>7</value>
       </entry>
       <entry>
          <key class="com.microchip.mcc.core.tokenManager.SettingKey" moduleName="WWDT" registerAlias="PCON" settingAlias="nRWDT"/>
@@ -5111,7 +5111,7 @@
       </entry>
       <entry>
          <key class="com.microchip.mcc.core.tokenManager.SettingKey" moduleName="System Module" registerAlias="CONFIG3L" settingAlias="WDTCPS"/>
-         <value>WDTCPS_31</value>
+         <value>WDTCPS_0</value>
       </entry>
       <entry>
          <key class="com.microchip.mcc.core.tokenManager.OptionKey" moduleName="INTERNAL OSCILLATOR" registerAlias="OSCEN" settingAlias="SOSCEN" alias="enabled"/>
@@ -6587,7 +6587,7 @@
       </entry>
       <entry>
          <key class="com.microchip.mcc.core.tokenManager.RegisterKey" moduleName="System Module" registerAlias="CONFIG3L"/>
-         <value>31</value>
+         <value>96</value>
       </entry>
       <entry>
          <key class="com.microchip.mcc.core.tokenManager.SettingKey" moduleName="System Module" registerAlias="CONFIG2H" settingAlias="STVREN"/>
@@ -7637,19 +7637,19 @@
    <generatedFileHashHistoryMap class="java.util.HashMap">
       <entry>
          <file>mcc_generated_files\mcc.h</file>
-         <hash>e04e8351a67f30bed1c8183d9634b2a5db1c7834974497940e844644b4e72788</hash>
+         <hash>e1ccdca56d51f164425639d75516b19744a07e7da740292d5326d42600738f48</hash>
       </entry>
       <entry>
          <file>mcc_generated_files\device_config.h</file>
          <hash>98e5f140e7adca79236e87ae3b8abf5703e8e1daae6640000159d489629e1c1a</hash>
       </entry>
       <entry>
-         <file>mcc_generated_files\adcc.c</file>
-         <hash>8387f37a3a1d993429e9eb9c09edf37173d7909bdd4bcde4c469272d78f76bca</hash>
-      </entry>
-      <entry>
          <file>mcc_generated_files\fvr.h</file>
          <hash>e2b3a3b1ffff92542bb3cae1808455e8f3bacbbbfcda03c2d873f7e999575d76</hash>
+      </entry>
+      <entry>
+         <file>mcc_generated_files\adcc.c</file>
+         <hash>ac237cd019c7cee06d4aff0f5266b92586a9704fd907ec1a9319aec4541b11be</hash>
       </entry>
       <entry>
          <file>main.c</file>
@@ -7661,15 +7661,15 @@
       </entry>
       <entry>
          <file>mcc_generated_files\device_config.c</file>
-         <hash>85df85ac1d4676a69b28f70a47b8d7b3da8828884b175490c8a29c89967d333b</hash>
-      </entry>
-      <entry>
-         <file>mcc_generated_files\adcc.h</file>
-         <hash>154893130f5f1fd6567c770a1662f393687c79d1b97fa1bd51936df3e31800e6</hash>
+         <hash>5ae1904014b6d980f2f6ef7e8199cec4b4f9e8ece933bfe12564e57e9d365458</hash>
       </entry>
       <entry>
          <file>mcc_generated_files\pin_manager.h</file>
          <hash>cfa9adc21082dae5292fd59bc4459c850d23d79a777d0152b1f5c29b9bcbe52a</hash>
+      </entry>
+      <entry>
+         <file>mcc_generated_files\adcc.h</file>
+         <hash>154893130f5f1fd6567c770a1662f393687c79d1b97fa1bd51936df3e31800e6</hash>
       </entry>
       <entry>
          <file>mcc_generated_files\mcc.c</file>
