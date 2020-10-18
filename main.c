@@ -63,6 +63,9 @@ int main(int argc, char** argv) {
 
     /***************Main Loop***************/
     while(1){
+        
+        CLRWDT(); //every loop lets reset the WatchDog Timer, it is set up to reset the board if we go more than 1 ms without reset
+        
         if(millis() > last_millis + MAX_LOOP_TIME_DIFF_ms){
             last_millis = millis();
 
@@ -74,6 +77,7 @@ int main(int argc, char** argv) {
             //General Status Messages
             bool status_ok = true;
             status_ok &= check_battery_voltage_error();
+            //TODO: CHECK IF Watch Dog timer widow violation has ocured
             if (status_ok){
                 send_status_ok();
             }
