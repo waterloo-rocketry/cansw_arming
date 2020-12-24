@@ -63,9 +63,9 @@ int main(int argc, char** argv) {
 
     /***************Main Loop***************/
     while(1){
-        
-        CLRWDT(); //every loop lets reset the WatchDog Timer, it is set up to reset the board if we go more than 1 ms without reset
-        
+
+        CLRWDT(); //every loop resets the WatchDog Timer, it is set up to reset the board if we go more than 1 ms without reset
+
         if(millis() > last_millis + MAX_LOOP_TIME_DIFF_ms){
             last_millis = millis();
 
@@ -73,7 +73,7 @@ int main(int argc, char** argv) {
             LATC5 = ~PORTCbits.RC5;
 
             /***********Status Messages***********/
-            
+
             //General Status Messages
             bool status_ok = true;
             status_ok &= check_battery_voltage_error();
@@ -81,7 +81,7 @@ int main(int argc, char** argv) {
             if (status_ok){
                 send_status_ok();
             }
-            
+
             //Altimeter Status Messages
             can_msg_t alt_1_arm_stat_msg;
             build_arm_stat_msg(millis(),
@@ -100,7 +100,7 @@ int main(int argc, char** argv) {
                                (uint16_t)(ADCC_GetSingleConversion(channel_A2_MAIN)*ANALOG_SCALAR),
                                &alt_2_arm_stat_msg);
             txb_enqueue(&alt_2_arm_stat_msg);
-            
+
             //Battery Status Messages
             can_msg_t bat_1_v_msg;
             build_analog_data_msg(millis(),
