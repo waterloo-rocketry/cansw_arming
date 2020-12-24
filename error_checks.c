@@ -10,35 +10,35 @@
 
 bool check_battery_voltage_error(void){
     uint16_t batt1_voltage = (uint16_t)ADCC_GetSingleConversion(channel_BATTERY_1)*ANALOG_SCALAR;
-    uint16_t batt2_voltage = (uint16_t)ADCC_GetSingleConversion(channel_BATTERY_2)*ANALOG_SCALAR;   
+    uint16_t batt2_voltage = (uint16_t)ADCC_GetSingleConversion(channel_BATTERY_2)*ANALOG_SCALAR;
     bool nominal = true; // keep track of if there was an error
-    
+
     if(batt1_voltage > OVERVOLTAGE_THRESHOLD || batt2_voltage > OVERVOLTAGE_THRESHOLD){
         uint8_t batt_data[2] = {0};
         uint16_t batt_voltage = batt1_voltage > batt2_voltage ? batt1_voltage : batt2_voltage; // since we have 2 batteries, send the voltage for the highest one
         batt_data[0] = (batt_voltage >> 8) & 0xff;
         batt_data[1] = (batt_voltage >> 0) & 0xff;
-        
+
         can_msg_t error_msg;
         build_board_stat_msg(millis(), E_BATT_OVER_VOLTAGE, batt_data, 2, &error_msg);
         txb_enqueue(&error_msg);
-        
+
         nominal = false;
     }
-    
+
     if (batt1_voltage < UNDERVOLTAGE_THRESHOLD || batt2_voltage < UNDERVOLTAGE_THRESHOLD){
         uint8_t batt_data[2] = {0};
         uint16_t batt_voltage = batt1_voltage < batt2_voltage ? batt1_voltage : batt2_voltage; // since we have 2 batteries, send the voltage for the lowest one
         batt_data[0] = (batt_voltage >> 8) & 0xff;
         batt_data[1] = (batt_voltage >> 0) & 0xff;
-        
+
         can_msg_t error_msg;
         build_board_stat_msg(millis(), E_BATT_UNDER_VOLTAGE, batt_data, 2, &error_msg);
         txb_enqueue(&error_msg);
-        
+
         nominal = false;
     }
-            
+
     return nominal;
 }
 
@@ -48,8 +48,7 @@ void indicator_buzzer_heartbeat(void){
 
     int loop_time = millis() - indicator_buzzer_last_millis;
 
-    if(buzzer_on == false && loop_time < 750
-        && battery1_active()){
+    if(buzzer_on == false && loop_time < 750 && battery1_active()){
         BUZZER_ON();
         buzzer_on = true;
     }
@@ -59,8 +58,7 @@ void indicator_buzzer_heartbeat(void){
         buzzer_on = false;
     }
 
-    else if(buzzer_on == false && loop_time >= 1000 && loop_time < 1250
-        && battery2_active()){
+    else if(buzzer_on == false && loop_time >= 1000 && loop_time < 1250 && battery2_active()){
         BUZZER_ON();
         buzzer_on = true;
     }
@@ -70,8 +68,7 @@ void indicator_buzzer_heartbeat(void){
         buzzer_on = false;
     }
 
-    else if(buzzer_on == false && loop_time >= 1500 && loop_time < 1750
-        && battery2_active()){
+    else if(buzzer_on == false && loop_time >= 1500 && loop_time < 1750 && battery2_active()){
         BUZZER_ON();
         buzzer_on = true;
     }
