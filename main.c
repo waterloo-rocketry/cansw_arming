@@ -115,6 +115,13 @@ int main(int argc, char** argv) {
                                   (uint16_t)(ADCC_GetSingleConversion(channel_BATTERY_2)*ANALOG_SCALAR),
                                   &bat_2_v_msg);
             txb_enqueue(&bat_2_v_msg);
+            
+            can_msg_t batt_curr_msg;
+            build_analog_data_msg(millis(),
+                                  SENSOR_BATT_CURR,
+                                  (uint16_t)(ADCC_GetSingleConversion(channel_BATT_CURR)*BATT_CURR_SCALAR),
+                                  &batt_curr_msg);
+            txb_enqueue(&batt_curr_msg);
 
         }
 
