@@ -88,17 +88,21 @@ typedef __uint24 uint24_t;
 
 typedef enum
 {
-    channel_BATTERY_1 =  0x0,
-    channel_BATTERY_2 =  0x1,
-    channel_A2_DROGUE =  0x8,
-    channel_A2_MAIN =  0x9,
-    channel_A1_DROGUE =  0xA,
-    channel_A1_MAIN =  0xB,
-    channel_VSS =  0x3B,
-    channel_Temp =  0x3C,
-    channel_DAC1 =  0x3D,
-    channel_FVR_Buffer1 =  0x3E,
-    channel_FVR_Buffer2 =  0x3F
+    channel_BATTERY_1 = 0x0,
+    channel_BATTERY_2 = 0x1,
+    channel_MAG_1     = 0x2,
+    channel_MAG_2     = 0x3,
+    channel_CAN_CURR  = 0x4,
+    channel_BATT_CURR = 0x5,
+    channel_A2_DROGUE = 0x8,
+    channel_A2_MAIN   = 0x9,
+    channel_A1_DROGUE = 0xA,
+    channel_A1_MAIN   = 0xB,
+    channel_VSS       = 0x3B,
+    channel_Temp      = 0x3C,
+    channel_DAC1      = 0x3D,
+    channel_FVR_Buffer1 = 0x3E,
+    channel_FVR_Buffer2 = 0x3F
 } adcc_channel_t;
 
 /**

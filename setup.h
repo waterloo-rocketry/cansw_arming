@@ -28,6 +28,9 @@
 
 // Voltage Monitoring
 #define ANALOG_SCALAR 3.72
+// Current Monitorring
+#define BATT_CURR_SCALAR 2.50 // mA/mV
+#define BUS_CURR_SCALAR  0.05 // mA/mV
 
 void output_init(void);
 

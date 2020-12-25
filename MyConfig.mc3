@@ -1819,7 +1819,7 @@
       </entry>
       <entry>
          <key class="com.microchip.mcc.core.tokenManager.CustomKey" moduleName="Pin Module" name="Custom Name RA5"/>
-         <value/>
+         <value>channel_ANA5</value>
       </entry>
       <entry>
          <key class="com.microchip.mcc.core.tokenManager.CustomKey" moduleName="Pin Module" name="Custom Name RA6"/>
@@ -1859,7 +1859,7 @@
       </entry>
       <entry>
          <key class="com.microchip.mcc.core.tokenManager.CustomKey" moduleName="Pin Module" name="Custom Name RA2"/>
-         <value/>
+         <value>channel_ANA2</value>
       </entry>
       <entry>
          <key class="com.microchip.mcc.core.tokenManager.OptionKey" moduleName="ADCC" registerAlias="ADCLK" settingAlias="ADCCS" alias="FOSC/38"/>
@@ -1867,11 +1867,11 @@
       </entry>
       <entry>
          <key class="com.microchip.mcc.core.tokenManager.CustomKey" moduleName="Pin Module" name="Custom Name RA3"/>
-         <value/>
+         <value>channel_ANA3</value>
       </entry>
       <entry>
          <key class="com.microchip.mcc.core.tokenManager.CustomKey" moduleName="Pin Module" name="Custom Name RA4"/>
-         <value/>
+         <value>channel_ANA4</value>
       </entry>
       <entry>
          <key class="com.microchip.mcc.core.tokenManager.OptionKey" moduleName="ADCC" registerAlias="ADCLK" settingAlias="ADCCS" alias="FOSC/46"/>
@@ -3955,7 +3955,7 @@
       </entry>
       <entry>
          <key class="com.microchip.mcc.core.tokenManager.CustomKey" moduleName="ADCC" name="ANA5"/>
-         <value>disabled</value>
+         <value>enabled</value>
       </entry>
       <entry>
          <key class="com.microchip.mcc.core.tokenManager.OptionKey" moduleName="Pin Module" registerAlias="LATC" settingAlias="LATC1" alias="set"/>
@@ -3963,15 +3963,15 @@
       </entry>
       <entry>
          <key class="com.microchip.mcc.core.tokenManager.CustomKey" moduleName="ADCC" name="ANA4"/>
-         <value>disabled</value>
+         <value>enabled</value>
       </entry>
       <entry>
          <key class="com.microchip.mcc.core.tokenManager.CustomKey" moduleName="ADCC" name="ANA3"/>
-         <value>disabled</value>
+         <value>enabled</value>
       </entry>
       <entry>
          <key class="com.microchip.mcc.core.tokenManager.CustomKey" moduleName="ADCC" name="ANA2"/>
-         <value>disabled</value>
+         <value>enabled</value>
       </entry>
       <entry>
          <key class="com.microchip.mcc.core.tokenManager.CustomKey" moduleName="ADCC" name="ANA1"/>
@@ -7637,19 +7637,19 @@
    <generatedFileHashHistoryMap class="java.util.HashMap">
       <entry>
          <file>mcc_generated_files\mcc.h</file>
-         <hash>e04e8351a67f30bed1c8183d9634b2a5db1c7834974497940e844644b4e72788</hash>
+         <hash>e1ccdca56d51f164425639d75516b19744a07e7da740292d5326d42600738f48</hash>
       </entry>
       <entry>
          <file>mcc_generated_files\device_config.h</file>
          <hash>98e5f140e7adca79236e87ae3b8abf5703e8e1daae6640000159d489629e1c1a</hash>
       </entry>
       <entry>
-         <file>mcc_generated_files\adcc.c</file>
-         <hash>ac237cd019c7cee06d4aff0f5266b92586a9704fd907ec1a9319aec4541b11be</hash>
-      </entry>
-      <entry>
          <file>mcc_generated_files\fvr.h</file>
          <hash>e2b3a3b1ffff92542bb3cae1808455e8f3bacbbbfcda03c2d873f7e999575d76</hash>
+      </entry>
+      <entry>
+         <file>mcc_generated_files\adcc.c</file>
+         <hash>ac237cd019c7cee06d4aff0f5266b92586a9704fd907ec1a9319aec4541b11be</hash>
       </entry>
       <entry>
          <file>mcc_generated_files\fvr.c</file>
@@ -7664,12 +7664,12 @@
          <hash>0b8600b44ea20486b2e50d1304c5b0ac4b32c20b7f9d3cff327f4b8e9a3eaa95</hash>
       </entry>
       <entry>
-         <file>mcc_generated_files\adcc.h</file>
-         <hash>154893130f5f1fd6567c770a1662f393687c79d1b97fa1bd51936df3e31800e6</hash>
+         <file>mcc_generated_files\pin_manager.h</file>
+         <hash>ee3295e7c46c36d8b7d0b24f6c93c5977087eeb38fd9e28c6197eaa5124d2a3c</hash>
       </entry>
       <entry>
-         <file>mcc_generated_files\pin_manager.h</file>
-         <hash>cfa9adc21082dae5292fd59bc4459c850d23d79a777d0152b1f5c29b9bcbe52a</hash>
+         <file>mcc_generated_files\adcc.h</file>
+         <hash>b4a2583696b9e470e153bf08f942235c0b2fcd1e07bf8e29215e7aaaf852be3a</hash>
       </entry>
       <entry>
          <file>mcc_generated_files\mcc.c</file>
