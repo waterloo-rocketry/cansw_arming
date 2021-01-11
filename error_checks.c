@@ -42,6 +42,22 @@ bool check_battery_voltage_error(void){
     return nominal;
 }
 
+bool check_bus_overcurrent_error(void){
+    uint16_t bus_curr = (uint16_t)(ADCC_GetSingleConversion(channel_CAN_CURR)*CAN_CURR_SCALAR);
+    if(bus_curr > BUS_OVERCURRENT_THRESHOLD){
+        uint8_t curr_data[2] = {0};
+        curr_data[0] = (bus_curr >> 8) & 0xff;
+        curr_data[1] = (bus_curr >> 0) & 0xff;
+        
+        can_msg_t error_msg;
+        build_board_stat_msg(millis(), E_BUS_OVER_CURRENT, curr_data, 2, &error_msg);
+        txb_enqueue(&error_msg);
+        
+        return false;        
+    }
+    return true;
+}
+
 static uint32_t indicator_buzzer_last_millis = 0;
 static bool buzzer_on = false;
 void indicator_buzzer_heartbeat(void){
@@ -88,4 +104,24 @@ bool battery1_active(void){
 
 bool battery2_active(void){
     return (uint16_t)ADCC_GetSingleConversion(channel_BATTERY_2)*ANALOG_SCALAR > MIN_BATTERY_THRESHOLD;
+}
+
+//zach derived the equation alpha = (Fs*T/5)/ 1 + (Fs*T/5)
+// where Fs = sampling frequency and T = response time
+#define alpha_low 0.95 
+#define alpha_low_low 0.9975
+double low_pass_curr = 0;
+double low_low_pass_curr = 0;
+double batt_curr_low_pass(void){
+    double new_curr_reading = ADCC_GetSingleConversion(channel_BATT_CURR)*BATT_CURR_SCALAR;
+    
+    low_pass_curr = alpha_low*low_pass_curr + (1.0 - alpha_low)*new_curr_reading;
+            
+    low_low_pass_curr = alpha_low_low*low_low_pass_curr + (1.0 - alpha_low_low)*new_curr_reading;
+    
+    return low_pass_curr;
+}
+
+double get_batt_curr_low_low_pass(void){
+    return low_low_pass_curr;
 }

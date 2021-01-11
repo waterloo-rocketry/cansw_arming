@@ -59,14 +59,15 @@ int main(int argc, char** argv) {
 
 
     uint32_t last_millis = millis();
-
+    uint32_t sensor_last_millis = millis();
 
     /***************Main Loop***************/
     while(1){
 
         CLRWDT(); //every loop resets the WatchDog Timer, it is set up to reset the board if we go more than 1 ms without reset
 
-        if(millis() > last_millis + MAX_LOOP_TIME_DIFF_ms){
+        //status updates every MAX_LOOP_TIME
+        if(millis() >= last_millis + MAX_LOOP_TIME_DIFF_ms){
             last_millis = millis();
 
             // Toggle the white LED
@@ -77,6 +78,7 @@ int main(int argc, char** argv) {
             //General Status Messages
             bool status_ok = true;
             status_ok &= check_battery_voltage_error();
+            status_ok &= check_bus_overcurrent_error();
             //TODO: CHECK IF Watch Dog timer widow violation has ocured
             if (status_ok){
                 send_status_ok();
@@ -119,12 +121,20 @@ int main(int argc, char** argv) {
             can_msg_t batt_curr_msg;
             build_analog_data_msg(millis(),
                                   SENSOR_BATT_CURR,
-                                  (uint16_t)(ADCC_GetSingleConversion(channel_BATT_CURR)*BATT_CURR_SCALAR),
+                                  get_batt_curr_low_low_pass(),
                                   &batt_curr_msg);
             txb_enqueue(&batt_curr_msg);
 
         }
+        
+        //high speed sensor checking
+        if(millis() >= sensor_last_millis + MAX_SENSOR_LOOP_TIME_DIFF_ms){
+            sensor_last_millis = millis();
+            batt_curr_low_pass();
+        }
 
+        
+        //handle altitude data, send message if new altitude received
         parse_altitude();
         if (new_altitude_available()){
             can_msg_t altitude_msg;
@@ -157,6 +167,7 @@ int main(int argc, char** argv) {
         //Mag-switch Arming Alert
         indicator_buzzer_heartbeat();
     }
+    // unreachable!
     return (EXIT_SUCCESS);
 }
 
