@@ -22,25 +22,25 @@
 */
 
 /*
-    (c) 2018 Microchip Technology Inc. and its subsidiaries. 
-    
-    Subject to your compliance with these terms, you may use Microchip software and any 
-    derivatives exclusively with Microchip products. It is your responsibility to comply with third party 
-    license terms applicable to your use of third party software (including open source software) that 
+    (c) 2018 Microchip Technology Inc. and its subsidiaries.
+
+    Subject to your compliance with these terms, you may use Microchip software and any
+    derivatives exclusively with Microchip products. It is your responsibility to comply with third party
+    license terms applicable to your use of third party software (including open source software) that
     may accompany Microchip software.
-    
-    THIS SOFTWARE IS SUPPLIED BY MICROCHIP "AS IS". NO WARRANTIES, WHETHER 
-    EXPRESS, IMPLIED OR STATUTORY, APPLY TO THIS SOFTWARE, INCLUDING ANY 
-    IMPLIED WARRANTIES OF NON-INFRINGEMENT, MERCHANTABILITY, AND FITNESS 
+
+    THIS SOFTWARE IS SUPPLIED BY MICROCHIP "AS IS". NO WARRANTIES, WHETHER
+    EXPRESS, IMPLIED OR STATUTORY, APPLY TO THIS SOFTWARE, INCLUDING ANY
+    IMPLIED WARRANTIES OF NON-INFRINGEMENT, MERCHANTABILITY, AND FITNESS
     FOR A PARTICULAR PURPOSE.
-    
-    IN NO EVENT WILL MICROCHIP BE LIABLE FOR ANY INDIRECT, SPECIAL, PUNITIVE, 
-    INCIDENTAL OR CONSEQUENTIAL LOSS, DAMAGE, COST OR EXPENSE OF ANY KIND 
-    WHATSOEVER RELATED TO THE SOFTWARE, HOWEVER CAUSED, EVEN IF MICROCHIP 
-    HAS BEEN ADVISED OF THE POSSIBILITY OR THE DAMAGES ARE FORESEEABLE. TO 
-    THE FULLEST EXTENT ALLOWED BY LAW, MICROCHIP'S TOTAL LIABILITY ON ALL 
-    CLAIMS IN ANY WAY RELATED TO THIS SOFTWARE WILL NOT EXCEED THE AMOUNT 
-    OF FEES, IF ANY, THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS 
+
+    IN NO EVENT WILL MICROCHIP BE LIABLE FOR ANY INDIRECT, SPECIAL, PUNITIVE,
+    INCIDENTAL OR CONSEQUENTIAL LOSS, DAMAGE, COST OR EXPENSE OF ANY KIND
+    WHATSOEVER RELATED TO THE SOFTWARE, HOWEVER CAUSED, EVEN IF MICROCHIP
+    HAS BEEN ADVISED OF THE POSSIBILITY OR THE DAMAGES ARE FORESEEABLE. TO
+    THE FULLEST EXTENT ALLOWED BY LAW, MICROCHIP'S TOTAL LIABILITY ON ALL
+    CLAIMS IN ANY WAY RELATED TO THIS SOFTWARE WILL NOT EXCEED THE AMOUNT
+    OF FEES, IF ANY, THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS
     SOFTWARE.
 */
 
@@ -62,59 +62,59 @@
 void ADCC_Initialize(void)
 {
     // set the ADCC to the options selected in the User Interface
-    // ADLTH 0; 
+    // ADLTH 0;
     ADLTHL = 0x00;
-    // ADLTH 0; 
+    // ADLTH 0;
     ADLTHH = 0x00;
-    // ADUTH 0; 
+    // ADUTH 0;
     ADUTHL = 0x00;
-    // ADUTH 0; 
+    // ADUTH 0;
     ADUTHH = 0x00;
-    // ADSTPT 0; 
+    // ADSTPT 0;
     ADSTPTL = 0x00;
-    // ADSTPT 0; 
+    // ADSTPT 0;
     ADSTPTH = 0x00;
-    // ADACC 0; 
+    // ADACC 0;
     ADACCU = 0x00;
-    // ADRPT 0; 
+    // ADRPT 0;
     ADRPT = 0x00;
-    // ADPCH ANA0; 
+    // ADPCH ANA0;
     ADPCH = 0x00;
-    // ADACQ 0; 
+    // ADACQ 0;
     ADACQL = 0x00;
-    // ADACQ 0; 
+    // ADACQ 0;
     ADACQH = 0x00;
-    // ADCAP Additional uC disabled; 
+    // ADCAP Additional uC disabled;
     ADCAP = 0x00;
-    // ADPRE 0; 
+    // ADPRE 0;
     ADPREL = 0x00;
-    // ADPRE 0; 
+    // ADPRE 0;
     ADPREH = 0x00;
-    // ADDSEN disabled; ADGPOL digital_low; ADIPEN disabled; ADPPOL Vss; 
+    // ADDSEN disabled; ADGPOL digital_low; ADIPEN disabled; ADPPOL Vss;
     ADCON1 = 0x00;
-    // ADCRS 0; ADMD Basic_mode; ADACLR disabled; ADPSIS RES; 
+    // ADCRS 0; ADMD Basic_mode; ADACLR disabled; ADPSIS RES;
     ADCON2 = 0x00;
-    // ADCALC First derivative of Single measurement; ADTMD disabled; ADSOI ADGO not cleared; 
+    // ADCALC First derivative of Single measurement; ADTMD disabled; ADSOI ADGO not cleared;
     ADCON3 = 0x00;
-    // ADMATH registers not updated; 
+    // ADMATH registers not updated;
     ADSTAT = 0x00;
-    // ADNREF VSS; ADPREF FVR; 
+    // ADNREF VSS; ADPREF FVR;
     ADREF = 0x03;
-    // ADACT disabled; 
+    // ADACT disabled;
     ADACT = 0x00;
-    // ADCS FOSC/2; 
+    // ADCS FOSC/2;
     ADCLK = 0x00;
-    // ADGO stop; ADFM right; ADON enabled; ADCS FOSC/ADCLK; ADCONT disabled; 
+    // ADGO stop; ADFM right; ADON enabled; ADCS FOSC/ADCLK; ADCONT disabled;
     ADCON0 = 0x84;
-    
+
 
 }
 
 void ADCC_StartConversion(adcc_channel_t channel)
 {
     // select the A/D channel
-    ADPCH = channel;      
-  
+    ADPCH = channel;
+
     // Turn on the ADC module
     ADCON0bits.ADON = 1;
 
@@ -137,13 +137,13 @@ adc_result_t ADCC_GetConversionResult(void)
 adc_result_t ADCC_GetSingleConversion(adcc_channel_t channel)
 {
     // select the A/D channel
-    ADPCH = channel;  
+    ADPCH = channel;
 
     // Turn on the ADC module
     ADCON0bits.ADON = 1;
-	
+
     //Disable the continuous mode.
-    ADCON0bits.ADCONT = 0;    
+    ADCON0bits.ADCONT = 0;
 
     // Start the conversion
     ADCON0bits.ADGO = 1;
@@ -152,10 +152,12 @@ adc_result_t ADCC_GetSingleConversion(adcc_channel_t channel)
     // Wait for the conversion to finish
     while (ADCON0bits.ADGO)
     {
-        CLRWDT();
+        //thanks for nothing MCC, let's not burry this in here
+        // got it? thanks
+        //CLRWDT();
     }
-    
-    
+
+
     // Conversion finished, return the result
     return ((adc_result_t)((ADRESH << 8) + ADRESL));
 }
@@ -175,27 +177,27 @@ void ADCC_SetStopOnInterrupt(void)
 void ADCC_DischargeSampleCapacitor(void)
 {
     //Set the ADC channel to AVss.
-    ADPCH = 0x3b;   
+    ADPCH = 0x3b;
 }
 
 void ADCC_LoadAcquisitionRegister(uint16_t acquisitionValue)
 {
     //Load the ADACQH and ADACQL registers.
-    ADACQH = acquisitionValue >> 8; 
-    ADACQL = acquisitionValue;  
+    ADACQH = acquisitionValue >> 8;
+    ADACQL = acquisitionValue;
 }
 
 void ADCC_SetPrechargeTime(uint16_t prechargeTime)
 {
     //Load the ADPREH and ADPREL registers.
-    ADPREH = prechargeTime >> 8;  
+    ADPREH = prechargeTime >> 8;
     ADPREL = prechargeTime;
 }
 
 void ADCC_SetRepeatCount(uint8_t repeatCount)
 {
     //Load the ADRPT register.
-    ADRPT = repeatCount;   
+    ADRPT = repeatCount;
 }
 
 uint8_t ADCC_GetCurrentCountofConversions(void)

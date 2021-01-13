@@ -64,32 +64,32 @@ void indicator_buzzer_heartbeat(void){
 
     int loop_time = millis() - indicator_buzzer_last_millis;
 
-    if(buzzer_on == false && loop_time < 750 && battery1_active()){
+    if(buzzer_on == false && loop_time < 200 && mag1_active()){
         BUZZER_ON();
         buzzer_on = true;
     }
 
-    else if(buzzer_on == true && loop_time >= 750 && loop_time < 1000){
+    else if(buzzer_on == true && loop_time >= 200 && loop_time < 1000){
         BUZZER_OFF();
         buzzer_on = false;
     }
 
-    else if(buzzer_on == false && loop_time >= 1000 && loop_time < 1250 && battery2_active()){
+    else if(buzzer_on == false && loop_time >= 1000 && loop_time < 1100 && mag2_active()){
         BUZZER_ON();
         buzzer_on = true;
     }
 
-    else if(buzzer_on == true && loop_time >= 1250 && loop_time < 1500){
+    else if(buzzer_on == true && loop_time >= 1100 && loop_time < 1500){
         BUZZER_OFF();
         buzzer_on = false;
     }
 
-    else if(buzzer_on == false && loop_time >= 1500 && loop_time < 1750 && battery2_active()){
+    else if(buzzer_on == false && loop_time >= 1500 && loop_time < 1600 && mag2_active()){
         BUZZER_ON();
         buzzer_on = true;
     }
 
-    else if(buzzer_on == true && loop_time >= 1750 && loop_time < 2000){
+    else if(buzzer_on == true && loop_time >= 1600 && loop_time < 2000){
         BUZZER_OFF();
         buzzer_on = false;
     }
@@ -104,6 +104,14 @@ bool battery1_active(void){
 
 bool battery2_active(void){
     return (uint16_t)ADCC_GetSingleConversion(channel_BATTERY_2)*ANALOG_SCALAR > MIN_BATTERY_THRESHOLD;
+}
+
+bool mag1_active(void){
+    return (uint16_t)ADCC_GetSingleConversion(channel_MAG_1)*ANALOG_SCALAR > MIN_BATTERY_THRESHOLD;
+}
+
+bool mag2_active(void){
+    return (uint16_t)ADCC_GetSingleConversion(channel_MAG_2)*ANALOG_SCALAR > MIN_BATTERY_THRESHOLD;
 }
 
 //zach derived the equation alpha = (Fs*T/5)/ 1 + (Fs*T/5)
