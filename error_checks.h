@@ -19,6 +19,10 @@ bool battery1_active(void);
 
 bool battery2_active(void);
 
+bool mag1_active(void);
+
+bool mag2_active(void);
+
 //reads the batt_curr from the ADC and applies it to two low pass filters
 //returns the value from the higher cutoff frequency filter
 //must be run periodically to work correctly
