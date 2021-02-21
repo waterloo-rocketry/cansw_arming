@@ -1,3 +1,4 @@
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -167,6 +168,7 @@ int main(int argc, char** argv) {
         //Mag-switch Arming Alert
         indicator_buzzer_heartbeat();
     }
+    RESET();
     // unreachable!
     return (EXIT_SUCCESS);
 }
@@ -222,6 +224,9 @@ static void can_msg_handler(const can_msg_t *msg) {
             BLUE_LED_OFF();
             WHITE_LED_OFF();
             break;
+            
+        case MSG_RESET_CMD:
+            RESET();
 
         default:
             // this is where we go for all the messages we don't care about
