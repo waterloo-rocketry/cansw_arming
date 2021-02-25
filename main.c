@@ -119,10 +119,33 @@ int main(int argc, char** argv) {
                                   &bat_2_v_msg);
             txb_enqueue(&bat_2_v_msg);
             
+            //Mag Switch Voltage Messages
+            can_msg_t mag_1_v_msg;
+            build_analog_data_msg(millis(),
+                                  SENSOR_MAG_1,
+                                  (uint16_t)(ADCC_GetSingleConversion(channel_MAG_1)*ANALOG_SCALAR),
+                                  &mag_1_v_msg);
+            txb_enqueue(&mag_1_v_msg);
+            
+            can_msg_t mag_2_v_msg;
+            build_analog_data_msg(millis(),
+                                  SENSOR_MAG_2,
+                                  (uint16_t)(ADCC_GetSingleConversion(channel_MAG_2)*ANALOG_SCALAR),
+                                  &mag_2_v_msg);
+            txb_enqueue(&mag_2_v_msg);
+            
+            // Current Messages
             can_msg_t batt_curr_msg;
             build_analog_data_msg(millis(),
                                   SENSOR_BATT_CURR,
                                   get_batt_curr_low_low_pass(),
+                                  &batt_curr_msg);
+            txb_enqueue(&batt_curr_msg);
+            
+            can_msg_t bus_curr_msg;
+            build_analog_data_msg(millis(),
+                                  SENSOR_BUS_CURR,
+                                  (uint16_t)(ADCC_GetSingleConversion(channel_CAN_CURR)*CAN_CURR_SCALAR),
                                   &batt_curr_msg);
             txb_enqueue(&batt_curr_msg);
 
