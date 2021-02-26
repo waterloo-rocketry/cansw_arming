@@ -48,12 +48,12 @@ bool check_bus_overcurrent_error(void){
         uint8_t curr_data[2] = {0};
         curr_data[0] = (bus_curr >> 8) & 0xff;
         curr_data[1] = (bus_curr >> 0) & 0xff;
-        
+
         can_msg_t error_msg;
         build_board_stat_msg(millis(), E_BUS_OVER_CURRENT, curr_data, 2, &error_msg);
         txb_enqueue(&error_msg);
-        
-        return false;        
+
+        return false;
     }
     return true;
 }
@@ -116,8 +116,8 @@ bool mag2_active(void){
 
 //zach derived the equation alpha = (Fs*T/5)/ 1 + (Fs*T/5)
 // where Fs = sampling frequency and T = response time
-#define alpha_low 0.95 
-#define alpha_low_low 0.9975
+#define alpha_low 0.95 // sampling at 200Hz this gives response time of 0.475s
+#define alpha_low_low 0.9975       // and this gives a response time of 9.975s
 double low_pass_curr = 0;
 double low_low_pass_curr = 0;
 double batt_curr_low_pass(void){
