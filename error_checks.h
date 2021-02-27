@@ -25,7 +25,9 @@ bool mag2_active(void);
 //reads the batt_curr from the ADC and applies it to two low pass filters
 //returns the value from the higher cutoff frequency filter
 //must be run periodically to work correctly
-double batt_curr_low_pass(void);
+void batt_curr_low_pass(void);
+
+double get_batt_curr_low_pass(void);
 
 //returns the value from the lower cut off frequency filter
 double get_batt_curr_low_low_pass(void);

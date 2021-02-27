@@ -23,7 +23,7 @@ static enum ARM_STATE alt_1_arm_state = DISARMED;  // this should be ARMED for f
 static enum ARM_STATE alt_2_arm_state = DISARMED;
 
 // Memory pool for CAN transmit buffer
-uint8_t tx_pool[100];
+uint8_t tx_pool[500];
 
 int main(int argc, char** argv) {
     // init functions
@@ -145,8 +145,8 @@ int main(int argc, char** argv) {
             build_analog_data_msg(millis(),
                                   SENSOR_BUS_CURR,
                                   (uint16_t)(ADCC_GetSingleConversion(channel_CAN_CURR)*CAN_CURR_SCALAR),
-                                  &batt_curr_msg);
-            txb_enqueue(&batt_curr_msg);
+                                  &bus_curr_msg);
+            txb_enqueue(&bus_curr_msg);
 
         }
         
