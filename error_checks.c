@@ -116,17 +116,29 @@ bool mag2_active(void){
 
 //zach derived the equation alpha = (Fs*T/5)/ 1 + (Fs*T/5)
 // where Fs = sampling frequency and T = response time
-#define alpha_low 0.95 // sampling at 200Hz this gives response time of 0.475s
-#define alpha_low_low 0.9975       // and this gives a response time of 9.975s
+// response time is equivalent to 5*tau or 5/2pi*Fc, where Fc is cutoff frequency
+#define LOW_PASS_RESPONSE_TIME 0.5 //seconds
+#define LOW_LOW_PASS_RESPONSE_TIME 10 //seconds
+
+// sampling at 200Hz this gives alpha = 0.95
+double alpha_low = ((double)LOW_PASS_RESPONSE_TIME*200 / MAX_SENSOR_LOOP_TIME_DIFF_ms)/
+(1 + ((double)LOW_PASS_RESPONSE_TIME*200 / MAX_SENSOR_LOOP_TIME_DIFF_ms));
+// and this gives alpha = 9.975
+double alpha_low_low = ((double)LOW_LOW_PASS_RESPONSE_TIME*200 / MAX_SENSOR_LOOP_TIME_DIFF_ms)/
+(1 + ((double)LOW_LOW_PASS_RESPONSE_TIME*200 / MAX_SENSOR_LOOP_TIME_DIFF_ms));
+
 double low_pass_curr = 0;
 double low_low_pass_curr = 0;
-double batt_curr_low_pass(void){
+void batt_curr_low_pass(void){
     double new_curr_reading = ADCC_GetSingleConversion(channel_BATT_CURR)*BATT_CURR_SCALAR;
-    
+
     low_pass_curr = alpha_low*low_pass_curr + (1.0 - alpha_low)*new_curr_reading;
             
     low_low_pass_curr = alpha_low_low*low_low_pass_curr + (1.0 - alpha_low_low)*new_curr_reading;
-    
+
+}
+
+double get_batt_curr_low_pass(void){
     return low_pass_curr;
 }
 
