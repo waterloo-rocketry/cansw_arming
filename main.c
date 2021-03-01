@@ -153,7 +153,7 @@ int main(int argc, char** argv) {
         //high speed sensor checking
         if(millis() >= sensor_last_millis + MAX_SENSOR_LOOP_TIME_DIFF_ms){
             sensor_last_millis = millis();
-            batt_curr_low_pass();
+            update_batt_curr_low_pass();
         }
 
         
