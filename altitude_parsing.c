@@ -17,6 +17,7 @@ bool new_altitude_available(void){
     return new_altitude;
 }
 
+#ifndef UNIT_TEST
 void uart1_rx_init(uint32_t baud, uint32_t osc_freq){
 
     memset(string, 0, strlen(string));
@@ -56,6 +57,15 @@ void uart1_handle_interrupt(void){
     char rcv = U1RXB;
     srb_push(&rx_buf, &rcv);
 }
+#else
+#include <stdio.h>
+void init_srb(void){
+    srb_init(&rx_buf, rx_pool, sizeof(rx_pool), sizeof(char));
+}
+void get_rx_buf_ptr( srb_ctx_t **buf_ptr){
+    *buf_ptr = &rx_buf;
+}
+#endif
 
 void parse_altitude(void){
 //    This function parses altitude data from a Stratologger CF altimeter
