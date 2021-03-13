@@ -76,41 +76,6 @@ void indicator_buzzer_heartbeat(uint8_t stage){
         BUZZER_OFF();
         buzzer_on = false;
     }
-    
-    
-    
-//    if(buzzer_on == false && loop_time < 200 && mag1_active()){
-//        BUZZER_ON();
-//        buzzer_on = true;
-//    }
-//
-//    else if(buzzer_on == true && loop_time >= 200 && loop_time < 1000){
-//        BUZZER_OFF();
-//        buzzer_on = false;
-//    }
-//
-//    else if(buzzer_on == false && loop_time >= 1000 && loop_time < 1100 && mag2_active()){
-//        BUZZER_ON();
-//        buzzer_on = true;
-//    }
-//
-//    else if(buzzer_on == true && loop_time >= 1100 && loop_time < 1500){
-//        BUZZER_OFF();
-//        buzzer_on = false;
-//    }
-//
-//    else if(buzzer_on == false && loop_time >= 1500 && loop_time < 1600 && mag2_active()){
-//        BUZZER_ON();
-//        buzzer_on = true;
-//    }
-//
-//    else if(buzzer_on == true && loop_time >= 1600 && loop_time < 2000){
-//        BUZZER_OFF();
-//        buzzer_on = false;
-//    }
-//    else if(loop_time >= 2000){
-//        indicator_buzzer_last_millis = millis();
-//    }
 }
 
 bool battery1_active(void){
@@ -128,6 +93,8 @@ bool mag1_active(void){
 bool mag2_active(void){
     return (uint16_t)ADCC_GetSingleConversion(channel_MAG_2)*ANALOG_SCALAR > MIN_BATTERY_THRESHOLD;
 }
+
+
 
 //zach derived the equation alpha = (Fs*T/5)/ 1 + (Fs*T/5)
 // where Fs = sampling frequency and T = response time
