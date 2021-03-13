@@ -60,7 +60,12 @@ int main(int argc, char** argv) {
 
     uint32_t last_millis = millis();
     uint32_t sensor_last_millis = millis();
-
+    int32_t altitude = -999;
+    int32_t previous_altitude = -999;
+    uint8_t stage = 0;
+    uint32_t main_deploy_time = 0;
+    
+    bool startup = false;
     /***************Main Loop***************/
     while(1){
 
@@ -163,7 +168,44 @@ int main(int argc, char** argv) {
             can_msg_t altitude_msg;
             build_altitude_data_msg(millis(), get_altitude(), &altitude_msg);
             txb_enqueue(&altitude_msg);
+            previous_altitude = altitude;
+            altitude = get_altitude();
         }
+        
+        // Once we read altitude data start slow beeping
+        if (new_altitude_available() && startup != true){
+            stage = 1;
+        }
+        
+        // Once we surpass 200ft start and are not armed beeping faster
+        else if (altitude >= 2000 && mag1_active() == false && mag2_active() == false){
+            stage = 2;
+        }
+        
+        else if (altitude <= 3500 && mag1_active() == true && mag2_active() == true){
+            stage = 3;
+        }
+        
+        else if (altitude <= 2500 && mag1_active() == true && mag2_active() == true){
+            stage = 4;
+        }
+        
+        else if (altitude <= 2000 && mag1_active() == true && mag2_active() == true){
+            FIRE_A1_DROGUE();
+            main_deploy_time = millis();
+            
+            if (millis() - main_deploy_time >= 2000){
+                FIRE_A1_MAIN();
+                stage = 0;
+            }
+            
+        }
+        
+        // Check to see if we've landed
+        if (altitude <= 100 && altitude == previous_altitude){
+            stage = 1;
+        }
+        
         // set io to arm state of altimeter 1
         if(alt_1_arm_state == DISARMED) {
             DISARM_A1();
@@ -188,7 +230,7 @@ int main(int argc, char** argv) {
         txb_heartbeat();
 
         //Mag-switch Arming Alert
-        indicator_buzzer_heartbeat();
+        indicator_buzzer_heartbeat(stage);
     }
     RESET();
     // unreachable!

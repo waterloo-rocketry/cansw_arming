@@ -27,6 +27,8 @@
 #define DISARM_A1() (LATC3 = 0)
 #define ARM_A2() (LATC2 = 1)
 #define DISARM_A2() (LATC2 = 0)
+#define FIRE_A1_MAIN() (LATB3 = 1)
+#define FIRE_A1_DROGUE() (LATB2 = 1)
 
 // Voltage Monitoring
 #define ANALOG_SCALAR 3.72

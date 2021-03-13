@@ -12,7 +12,7 @@ bool check_battery_voltage_error(void);
 
 bool check_bus_overcurrent_error(void);
 
-void indicator_buzzer_heartbeat(void);
+void indicator_buzzer_heartbeat(uint8_t stage);
 
 bool battery1_active(void);
 

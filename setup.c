@@ -26,6 +26,11 @@ void output_init(void){
     TRISC2 = 0; // set C2 as an output for arming A2
     LATC2 = 1; // arm altimeter 2
 
+    TRISB3 = 0; // set B3 as an output for firing A1 main
+    LATB3 = 0
+            
+    TRISB2 = 0; // set B2 as an output for firing A1 Drogue
+    LATB3 = 0
 }
 
 void osc_init(void){

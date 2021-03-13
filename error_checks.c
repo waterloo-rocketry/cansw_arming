@@ -60,42 +60,57 @@ bool check_bus_overcurrent_error(void){
 
 static uint32_t indicator_buzzer_last_millis = 0;
 static bool buzzer_on = false;
-void indicator_buzzer_heartbeat(void){
+void indicator_buzzer_heartbeat(uint8_t stage){
 
     int loop_time = millis() - indicator_buzzer_last_millis;
-
-    if(buzzer_on == false && loop_time < 200 && mag1_active()){
+    // 4 Beep speeds: Slow(1) - Startup and after landing
+    // Medium(2) - At ~2000 ft to verify reading altitude correctly
+    // Fast(3) - Mag Switches are activated
+    // Fastest(4) - Imminent deployment
+    
+    if (stage != 0 && buzzer_on == false && loop_time < 200){
         BUZZER_ON();
         buzzer_on = true;
     }
-
-    else if(buzzer_on == true && loop_time >= 200 && loop_time < 1000){
+    else if (stage != 0 && buzzer_on == true && loop_time >= 200*(5-stage)){
         BUZZER_OFF();
         buzzer_on = false;
     }
-
-    else if(buzzer_on == false && loop_time >= 1000 && loop_time < 1100 && mag2_active()){
-        BUZZER_ON();
-        buzzer_on = true;
-    }
-
-    else if(buzzer_on == true && loop_time >= 1100 && loop_time < 1500){
-        BUZZER_OFF();
-        buzzer_on = false;
-    }
-
-    else if(buzzer_on == false && loop_time >= 1500 && loop_time < 1600 && mag2_active()){
-        BUZZER_ON();
-        buzzer_on = true;
-    }
-
-    else if(buzzer_on == true && loop_time >= 1600 && loop_time < 2000){
-        BUZZER_OFF();
-        buzzer_on = false;
-    }
-    else if(loop_time >= 2000){
-        indicator_buzzer_last_millis = millis();
-    }
+    
+    
+    
+//    if(buzzer_on == false && loop_time < 200 && mag1_active()){
+//        BUZZER_ON();
+//        buzzer_on = true;
+//    }
+//
+//    else if(buzzer_on == true && loop_time >= 200 && loop_time < 1000){
+//        BUZZER_OFF();
+//        buzzer_on = false;
+//    }
+//
+//    else if(buzzer_on == false && loop_time >= 1000 && loop_time < 1100 && mag2_active()){
+//        BUZZER_ON();
+//        buzzer_on = true;
+//    }
+//
+//    else if(buzzer_on == true && loop_time >= 1100 && loop_time < 1500){
+//        BUZZER_OFF();
+//        buzzer_on = false;
+//    }
+//
+//    else if(buzzer_on == false && loop_time >= 1500 && loop_time < 1600 && mag2_active()){
+//        BUZZER_ON();
+//        buzzer_on = true;
+//    }
+//
+//    else if(buzzer_on == true && loop_time >= 1600 && loop_time < 2000){
+//        BUZZER_OFF();
+//        buzzer_on = false;
+//    }
+//    else if(loop_time >= 2000){
+//        indicator_buzzer_last_millis = millis();
+//    }
 }
 
 bool battery1_active(void){
