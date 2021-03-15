@@ -2,6 +2,7 @@
 
 static int32_t altitude = -999;
 static bool new_altitude = false;
+static int32_t startup_asl = -999;
 static char string[16];
 
 char rx_pool[32]; // 32 bytes should be plenty
@@ -9,8 +10,11 @@ char rx_pool[32]; // 32 bytes should be plenty
 static srb_ctx_t rx_buf;
 
 int32_t get_altitude(void){
+    if (startup_asl == -999){
+        startup_asl = altitude;
+    }
     new_altitude = false;
-    return altitude;
+    return altitude+startup_asl;
 }
 
 bool new_altitude_available(void){

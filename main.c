@@ -22,6 +22,18 @@ static void send_status_ok(void);
 static enum ARM_STATE alt_1_arm_state = DISARMED;  // this should be ARMED for flight code
 static enum ARM_STATE alt_2_arm_state = DISARMED;
 
+static const uint32_t field_asl = 1050;
+
+
+typdef enum {
+    Startup_State,
+    FinalAscent_State,
+    Armed_State,
+    Fire_State,
+    Landed_State,
+    Error_State
+} systemState_t;
+
 // Memory pool for CAN transmit buffer
 uint8_t tx_pool[500];
 
@@ -61,11 +73,10 @@ int main(int argc, char** argv) {
     uint32_t last_millis = millis();
     uint32_t sensor_last_millis = millis();
     int32_t altitude = -999;
-    int32_t previous_altitude = -999;
     uint8_t stage = 0;
     uint32_t main_deploy_time = 0;
     
-    bool startup = false;
+    systemState_t = Startup_State;
     /***************Main Loop***************/
     while(1){
 
@@ -168,42 +179,59 @@ int main(int argc, char** argv) {
             can_msg_t altitude_msg;
             build_altitude_data_msg(millis(), get_altitude(), &altitude_msg);
             txb_enqueue(&altitude_msg);
-            previous_altitude = altitude;
             altitude = get_altitude();
-        }
-        
-        // Once we read altitude data start slow beeping
-        if (new_altitude_available() && startup != true){
             stage = 1;
         }
         
-        // Once we surpass 200ft start and are not armed beeping faster
-        else if (altitude >= 2000 && mag1_active() == false && mag2_active() == false){
-            stage = 2;
-        }
-        
-        else if (altitude <= 3500 && mag1_active() == true && mag2_active() == true){
-            stage = 3;
-        }
-        
-        else if (altitude <= 2500 && mag1_active() == true && mag2_active() == true){
-            stage = 4;
-        }
-        
-        else if (altitude <= 2000 && mag1_active() == true && mag2_active() == true){
-            FIRE_A1_DROGUE();
-            main_deploy_time = millis();
-            
-            if (millis() - main_deploy_time >= 2000){
-                FIRE_A1_MAIN();
-                stage = 0;
+        // TODO: Add error checks to transition to error state
+        switch (systemState){
+            case Startup_State:
+            {
+                if (altitude >= 2000 + field_asl){
+                    systemState = FinalAscent_State;
+                    stage = 2;
+                }
             }
-            
-        }
-        
-        // Check to see if we've landed
-        if (altitude <= 100 && altitude == previous_altitude){
-            stage = 1;
+            break;
+            case FinalAscent_State:
+            {
+                if (mag1_active() == true && mag2_active() == true && altitude >= 3500 + field_asl){
+                    systemState = Armed_State;
+                    stage = 3;
+                }
+            }
+            break;
+            case Armed_State:
+            {
+                if (altitude >= 2500 + field_asl){
+                    stage = 4;
+                    systemState = FireState
+                    main_deploy_time = millis();    
+                }if (millis() - main_deploy_time >= 2000){
+                    ARM_A2(); // Fire Backup Charge
+                }
+            }
+            break;    
+            case Fire_State:
+            {
+                if (altitude >= 2000 + field_asl && main_deploy_time == 0){
+                    ARM_A1(); //Fire Main Charge
+                    main_deploy_time = millis();    
+                }else if (millis() - main_deploy_time >= 2000){
+                    ARM_A2(); // Fire Backup Charge
+                    stage = 1;
+                    systemState = Landed_State;
+                }
+            }
+            break;  
+            case Landed_State:
+            {
+            }
+            break;     
+            case Error_State:
+            {
+            }
+            break;     
         }
         
         // set io to arm state of altimeter 1

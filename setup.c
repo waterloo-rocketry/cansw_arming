@@ -21,16 +21,10 @@ void output_init(void){
 
     // Altimeter Arming
     TRISC3 = 0; // set C3 as an output for arming A1
-    LATC3 = 1; // arm altimeter 1
+    LATC3 = 0; // arm altimeter 1
 
     TRISC2 = 0; // set C2 as an output for arming A2
-    LATC2 = 1; // arm altimeter 2
-
-    TRISB3 = 0; // set B3 as an output for firing A1 main
-    LATB3 = 0
-            
-    TRISB2 = 0; // set B2 as an output for firing A1 Drogue
-    LATB3 = 0
+    LATC2 = 0; // arm altimeter 2
 }
 
 void osc_init(void){
