@@ -75,6 +75,7 @@ int main(int argc, char** argv) {
     int32_t altitude = -999;
     uint8_t stage = 0;
     uint32_t main_deploy_time = 0;
+    uint32_t led_on_time = 0;
     
     systemState_t = Startup_State;
     /***************Main Loop***************/
@@ -187,7 +188,10 @@ int main(int argc, char** argv) {
         switch (systemState){
             case Startup_State:
             {
-                if (altitude >= 2000 + field_asl){
+                if (mag1_active() == true || mag2_active() == true){
+                    systemState = Error_State;
+                }
+                else if (altitude >= 2000 + field_asl){
                     systemState = FinalAscent_State;
                     stage = 2;
                 }
@@ -195,7 +199,10 @@ int main(int argc, char** argv) {
             break;
             case FinalAscent_State:
             {
-                if (mag1_active() == true && mag2_active() == true && altitude >= 3500 + field_asl){
+                if ((mag1_active() == true || mag2_active() == true) && altitude > 3500 + field_asl){
+                    systemState = Error_State;
+                }
+                else if (mag1_active() == true && mag2_active() == true && altitude >= 3500 + field_asl){
                     systemState = Armed_State;
                     stage = 3;
                 }
@@ -230,29 +237,12 @@ int main(int argc, char** argv) {
             break;     
             case Error_State:
             {
+                stage = 5;
+                BLUE_LED_ON();
             }
             break;     
         }
         
-        // set io to arm state of altimeter 1
-        if(alt_1_arm_state == DISARMED) {
-            DISARM_A1();
-            RED_LED_OFF();
-        }
-        else {
-            ARM_A1();
-            RED_LED_ON();
-        }
-
-        // set io to arm state of altimeter 2
-        if(alt_2_arm_state == DISARMED) {
-            DISARM_A2();
-            BLUE_LED_OFF();
-        }
-        else {
-            ARM_A2();
-            BLUE_LED_ON();
-        }
 
         // send queued messages
         txb_heartbeat();

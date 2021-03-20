@@ -67,14 +67,19 @@ void indicator_buzzer_heartbeat(uint8_t stage){
     // Medium(2) - At ~2000 ft to verify reading altitude correctly
     // Fast(3) - Mag Switches are activated
     // Fastest(4) - Imminent deployment
+    // Constant (5) - Error
     
     if (stage != 0 && buzzer_on == false && loop_time < 200){
         BUZZER_ON();
         buzzer_on = true;
+        RED_LED_ON();
     }
-    else if (stage != 0 && buzzer_on == true && loop_time >= 200*(5-stage)){
+    else if (stage != 0 && buzzer_on == true && loop_time > 200*(5-stage)){
         BUZZER_OFF();
         buzzer_on = false;
+        RED_LED_OFF();
+    }else if(loop_time >= 2000){
+        indicator_buzzer_last_millis = millis();
     }
 }
 

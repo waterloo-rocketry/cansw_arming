@@ -12,6 +12,7 @@ static srb_ctx_t rx_buf;
 int32_t get_altitude(void){
     if (startup_asl == -999){
         startup_asl = altitude;
+        return altitude;
     }
     new_altitude = false;
     return altitude+startup_asl;
