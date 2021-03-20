@@ -75,9 +75,9 @@ int main(int argc, char** argv) {
     int32_t altitude = -999;
     uint8_t stage = 0;
     uint32_t main_deploy_time = 0;
-    uint32_t led_on_time = 0;
+    uint32_t last_altitude_time = millis();
     
-    systemState_t = Startup_State;
+    systemState_t systemState = Startup_State;
     /***************Main Loop***************/
     while(1){
 
@@ -181,16 +181,21 @@ int main(int argc, char** argv) {
             build_altitude_data_msg(millis(), get_altitude(), &altitude_msg);
             txb_enqueue(&altitude_msg);
             altitude = get_altitude();
+            last_altitude_time = millis();
             stage = 1;
         }
         
-        // TODO: Add error checks to transition to error state
+        if (millis - last_altitude_time >= 100){  // Not sure what we want this number to be
+            systemState = Error_State;
+        }
+
         switch (systemState){
             case Startup_State:
             {
                 if (mag1_active() == true || mag2_active() == true){
                     systemState = Error_State;
                 }
+                
                 else if (altitude >= 2000 + field_asl){
                     systemState = FinalAscent_State;
                     stage = 2;
