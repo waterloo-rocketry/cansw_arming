@@ -25,7 +25,7 @@ static enum ARM_STATE alt_2_arm_state = DISARMED;
 static const uint32_t field_asl = 1050;
 
 
-typdef enum {
+typedef enum {
     Startup_State,
     FinalAscent_State,
     Armed_State,
@@ -76,7 +76,7 @@ int main(int argc, char** argv) {
     uint8_t stage = 0;
     uint32_t main_deploy_time = 0;
     uint32_t last_altitude_time = millis();
-    
+
     systemState_t systemState = Startup_State;
     /***************Main Loop***************/
     while(1){
@@ -134,7 +134,7 @@ int main(int argc, char** argv) {
                                   (uint16_t)(ADCC_GetSingleConversion(channel_BATTERY_2)*ANALOG_SCALAR),
                                   &bat_2_v_msg);
             txb_enqueue(&bat_2_v_msg);
-            
+
             //Mag Switch Voltage Messages
             can_msg_t mag_1_v_msg;
             build_analog_data_msg(millis(),
@@ -142,14 +142,14 @@ int main(int argc, char** argv) {
                                   (uint16_t)(ADCC_GetSingleConversion(channel_MAG_1)*ANALOG_SCALAR),
                                   &mag_1_v_msg);
             txb_enqueue(&mag_1_v_msg);
-            
+
             can_msg_t mag_2_v_msg;
             build_analog_data_msg(millis(),
                                   SENSOR_MAG_2,
                                   (uint16_t)(ADCC_GetSingleConversion(channel_MAG_2)*ANALOG_SCALAR),
                                   &mag_2_v_msg);
             txb_enqueue(&mag_2_v_msg);
-            
+
             // Current Messages
             can_msg_t batt_curr_msg;
             build_analog_data_msg(millis(),
@@ -157,7 +157,7 @@ int main(int argc, char** argv) {
                                   get_batt_curr_low_low_pass(),
                                   &batt_curr_msg);
             txb_enqueue(&batt_curr_msg);
-            
+
             can_msg_t bus_curr_msg;
             build_analog_data_msg(millis(),
                                   SENSOR_BUS_CURR,
@@ -166,14 +166,14 @@ int main(int argc, char** argv) {
             txb_enqueue(&bus_curr_msg);
 
         }
-        
+
         //high speed sensor checking
         if(millis() >= sensor_last_millis + MAX_SENSOR_LOOP_TIME_DIFF_ms){
             sensor_last_millis = millis();
             update_batt_curr_low_pass();
         }
 
-        
+
         //handle altitude data, send message if new altitude received
         parse_altitude();
         if (new_altitude_available()){
@@ -184,8 +184,8 @@ int main(int argc, char** argv) {
             last_altitude_time = millis();
             stage = 1;
         }
-        
-        if (millis - last_altitude_time >= 100){  // Not sure what we want this number to be
+
+        if (millis() - last_altitude_time >= 100){  // Not sure what we want this number to be
             systemState = Error_State;
         }
 
@@ -195,7 +195,7 @@ int main(int argc, char** argv) {
                 if (mag1_active() == true || mag2_active() == true){
                     systemState = Error_State;
                 }
-                
+
                 else if (altitude >= 2000 + field_asl){
                     systemState = FinalAscent_State;
                     stage = 2;
@@ -204,7 +204,7 @@ int main(int argc, char** argv) {
             break;
             case FinalAscent_State:
             {
-                if ((mag1_active() == true || mag2_active() == true) && altitude > 3500 + field_asl){
+                if ((mag1_active() == true || mag2_active() == true) && altitude < 3500 + field_asl){
                     systemState = Error_State;
                 }
                 else if (mag1_active() == true && mag2_active() == true && altitude >= 3500 + field_asl){
@@ -215,39 +215,36 @@ int main(int argc, char** argv) {
             break;
             case Armed_State:
             {
-                if (altitude >= 2500 + field_asl){
+                if (altitude <= 2500 + field_asl){
                     stage = 4;
-                    systemState = FireState
-                    main_deploy_time = millis();    
-                }if (millis() - main_deploy_time >= 2000){
-                    ARM_A2(); // Fire Backup Charge
+                    systemState = Fire_State;
                 }
             }
-            break;    
+            break;
             case Fire_State:
             {
-                if (altitude >= 2000 + field_asl && main_deploy_time == 0){
+                if (altitude <= 2000 + field_asl && main_deploy_time == 0){
                     ARM_A1(); //Fire Main Charge
-                    main_deploy_time = millis();    
+                    main_deploy_time = millis();
                 }else if (millis() - main_deploy_time >= 2000){
                     ARM_A2(); // Fire Backup Charge
                     stage = 1;
                     systemState = Landed_State;
                 }
             }
-            break;  
+            break;
             case Landed_State:
             {
             }
-            break;     
+            break;
             case Error_State:
             {
                 stage = 5;
                 BLUE_LED_ON();
             }
-            break;     
+            break;
         }
-        
+
 
         // send queued messages
         txb_heartbeat();
@@ -311,7 +308,7 @@ static void can_msg_handler(const can_msg_t *msg) {
             BLUE_LED_OFF();
             WHITE_LED_OFF();
             break;
-            
+
         case MSG_RESET_CMD:
             RESET();
 
