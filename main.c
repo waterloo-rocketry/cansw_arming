@@ -19,11 +19,7 @@
 static void can_msg_handler(const can_msg_t *msg);
 static void send_status_ok(void);
 
-static enum ARM_STATE alt_1_arm_state = DISARMED;  // this should be ARMED for flight code
-static enum ARM_STATE alt_2_arm_state = DISARMED;
-
 static const uint32_t field_asl = 1050;
-
 
 typedef enum {
     Startup_State,
@@ -101,25 +97,6 @@ int main(int argc, char** argv) {
                 send_status_ok();
             }
 
-            //Altimeter Status Messages
-            can_msg_t alt_1_arm_stat_msg;
-            build_arm_stat_msg(millis(),
-                               1,
-                               alt_1_arm_state,
-                               (uint16_t)(ADCC_GetSingleConversion(channel_A1_DROGUE)*ANALOG_SCALAR),
-                               (uint16_t)(ADCC_GetSingleConversion(channel_A1_MAIN)*ANALOG_SCALAR),
-                               &alt_1_arm_stat_msg);
-            txb_enqueue(&alt_1_arm_stat_msg);
-
-            can_msg_t alt_2_arm_stat_msg;
-            build_arm_stat_msg(millis(),
-                               2,
-                               alt_2_arm_state,
-                               (uint16_t)(ADCC_GetSingleConversion(channel_A2_DROGUE)*ANALOG_SCALAR),
-                               (uint16_t)(ADCC_GetSingleConversion(channel_A2_MAIN)*ANALOG_SCALAR),
-                               &alt_2_arm_stat_msg);
-            txb_enqueue(&alt_2_arm_stat_msg);
-
             //Battery Status Messages
             can_msg_t bat_1_v_msg;
             build_analog_data_msg(millis(),
@@ -192,49 +169,50 @@ int main(int argc, char** argv) {
         switch (systemState){
             case Startup_State:
             {
+                stage = 1;
                 if (mag1_active() == true || mag2_active() == true){
                     systemState = Error_State;
                 }
 
                 else if (altitude >= 2000 + field_asl){
                     systemState = FinalAscent_State;
-                    stage = 2;
                 }
             }
             break;
             case FinalAscent_State:
             {
+                stage = 2;
                 if ((mag1_active() == true || mag2_active() == true) && altitude < 3500 + field_asl){
                     systemState = Error_State;
                 }
                 else if (mag1_active() == true && mag2_active() == true && altitude >= 3500 + field_asl){
                     systemState = Armed_State;
-                    stage = 3;
                 }
             }
             break;
             case Armed_State:
             {
+                stage = 3;
                 if (altitude <= 2500 + field_asl){
-                    stage = 4;
                     systemState = Fire_State;
                 }
             }
             break;
             case Fire_State:
             {
+                stage = 4;
                 if (altitude <= 2000 + field_asl && main_deploy_time == 0){
                     ARM_A1(); //Fire Main Charge
                     main_deploy_time = millis();
                 }else if (millis() - main_deploy_time >= 2000){
                     ARM_A2(); // Fire Backup Charge
-                    stage = 1;
                     systemState = Landed_State;
                 }
             }
             break;
             case Landed_State:
             {
+                stage = 1;
             }
             break;
             case Error_State:
@@ -291,12 +269,6 @@ static void can_msg_handler(const can_msg_t *msg) {
     enum ARM_STATE desired_arm_state = ARMED;
 
     switch (msg_type) {
-        case MSG_ALT_ARM_CMD:
-            get_req_arm_state(msg, &alt_num, &desired_arm_state);
-            if(alt_num == 1) { alt_1_arm_state = desired_arm_state; }
-            if(alt_num == 2) { alt_2_arm_state = desired_arm_state; }
-            break;
-
         case MSG_LEDS_ON:
             RED_LED_ON();
             BLUE_LED_ON();
