@@ -50,21 +50,21 @@ int main(int argc, char** argv) {
     /***********set up CAN**********/
 
     // Set up CAN TX
-    TRISC0 = 0;
-    RC0PPS = 0x33;
+    //TRISC0 = 0;
+    //RC0PPS = 0x33;
 
     // Set up CAN RX
-    TRISC1 = 1;
-    ANSELC1 = 0;
-    CANRXPPS = 0x11;
+    //TRISC1 = 1;
+    //ANSELC1 = 0;
+    //CANRXPPS = 0x11;
 
     // set up CAN module
-    can_timing_t can_setup;
-    can_generate_timing_params(_XTAL_FREQ, &can_setup);
+    //can_timing_t can_setup;
+    //can_generate_timing_params(_XTAL_FREQ, &can_setup);
 
-    can_init(&can_setup, can_msg_handler);
+    //can_init(&can_setup, can_msg_handler);
     // set up CAN tx buffer
-    txb_init(tx_pool, sizeof(tx_pool), can_send, can_send_rdy);
+    //txb_init(tx_pool, sizeof(tx_pool), can_send, can_send_rdy);
 
 
     uint32_t last_millis = millis();
@@ -104,14 +104,14 @@ int main(int argc, char** argv) {
                                   SENSOR_ARM_BATT_1,
                                   (uint16_t)(ADCC_GetSingleConversion(channel_BATTERY_1)*ANALOG_SCALAR),
                                   &bat_1_v_msg);
-            txb_enqueue(&bat_1_v_msg);
+            //txb_enqueue(&bat_1_v_msg);
 
             can_msg_t bat_2_v_msg;
             build_analog_data_msg(millis(),
                                   SENSOR_ARM_BATT_2,
                                   (uint16_t)(ADCC_GetSingleConversion(channel_BATTERY_2)*ANALOG_SCALAR),
                                   &bat_2_v_msg);
-            txb_enqueue(&bat_2_v_msg);
+            //txb_enqueue(&bat_2_v_msg);
 
             //Mag Switch Voltage Messages
             can_msg_t mag_1_v_msg;
@@ -119,14 +119,14 @@ int main(int argc, char** argv) {
                                   SENSOR_MAG_1,
                                   (uint16_t)(ADCC_GetSingleConversion(channel_MAG_1)*ANALOG_SCALAR),
                                   &mag_1_v_msg);
-            txb_enqueue(&mag_1_v_msg);
+            //txb_enqueue(&mag_1_v_msg);
 
             can_msg_t mag_2_v_msg;
             build_analog_data_msg(millis(),
                                   SENSOR_MAG_2,
                                   (uint16_t)(ADCC_GetSingleConversion(channel_MAG_2)*ANALOG_SCALAR),
                                   &mag_2_v_msg);
-            txb_enqueue(&mag_2_v_msg);
+            //txb_enqueue(&mag_2_v_msg);
 
             // Current Messages
             can_msg_t batt_curr_msg;
@@ -134,14 +134,14 @@ int main(int argc, char** argv) {
                                   SENSOR_BATT_CURR,
                                   get_batt_curr_low_low_pass(),
                                   &batt_curr_msg);
-            txb_enqueue(&batt_curr_msg);
+            //txb_enqueue(&batt_curr_msg);
 
             can_msg_t bus_curr_msg;
             build_analog_data_msg(millis(),
                                   SENSOR_BUS_CURR,
                                   (uint16_t)(ADCC_GetSingleConversion(channel_CAN_CURR)*CAN_CURR_SCALAR),
                                   &bus_curr_msg);
-            txb_enqueue(&bus_curr_msg);
+            //txb_enqueue(&bus_curr_msg);
 
         }
 
@@ -196,7 +196,7 @@ int main(int argc, char** argv) {
                 if ((mag1_active() == true /*|| mag2_active() == true*/) && altitude < 3500 + field_asl){
                     systemState = Error_State;
                 }
-                else if (mag1_active() == true && mag2_active() == true && altitude >= 3500 + field_asl){
+                else if (mag1_active() == true /*&& mag2_active() == true*/ && altitude >= 3500 + field_asl){
                     systemState = Armed_State;
                 }
             }
@@ -236,7 +236,7 @@ int main(int argc, char** argv) {
 
 
         // send queued messages
-//        txb_heartbeat();
+        //txb_heartbeat();
 
         //Mag-switch Arming Alert
         indicator_buzzer_heartbeat(stage);
