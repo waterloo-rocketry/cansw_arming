@@ -22,6 +22,7 @@ static void send_status_ok(void);
 static const uint32_t field_asl = 1050;
 
 typedef enum {
+    Initialize_State,
     Startup_State,
     FinalAscent_State,
     Armed_State,
@@ -73,7 +74,7 @@ int main(int argc, char** argv) {
     uint32_t main_deploy_time = 0;
     uint32_t last_altitude_time = millis();
 
-    systemState_t systemState = Startup_State;
+    systemState_t systemState = Initialize_State;
     /***************Main Loop***************/
     while(1){
 
@@ -94,7 +95,7 @@ int main(int argc, char** argv) {
             status_ok &= check_bus_overcurrent_error();
             //TODO: CHECK IF Watch Dog timer window violation has ocured
             if (status_ok){
-                send_status_ok();
+               send_status_ok();
             }
 
             //Battery Status Messages
@@ -159,18 +160,28 @@ int main(int argc, char** argv) {
             txb_enqueue(&altitude_msg);
             altitude = get_altitude();
             last_altitude_time = millis();
-            stage = 1;
         }
 
-        if (millis() - last_altitude_time >= 100){  // Not sure what we want this number to be
+        if (altitude != -999 && millis() - last_altitude_time >= 10000){  // Not sure what we want this number to be
             systemState = Error_State;
         }
 
         switch (systemState){
+            case Initialize_State:
+            {
+                if (mag1_active() == true /*|| mag2_active() == true*/){
+                    systemState = Error_State;
+                }
+
+                else if (altitude != -999) {
+                    systemState = Startup_State;
+                }
+            }
+            break;
             case Startup_State:
             {
                 stage = 1;
-                if (mag1_active() == true || mag2_active() == true){
+                if (mag1_active() == true /*|| mag2_active() == true*/){
                     systemState = Error_State;
                 }
 
@@ -182,7 +193,7 @@ int main(int argc, char** argv) {
             case FinalAscent_State:
             {
                 stage = 2;
-                if ((mag1_active() == true || mag2_active() == true) && altitude < 3500 + field_asl){
+                if ((mag1_active() == true /*|| mag2_active() == true*/) && altitude < 3500 + field_asl){
                     systemState = Error_State;
                 }
                 else if (mag1_active() == true && mag2_active() == true && altitude >= 3500 + field_asl){
@@ -225,7 +236,7 @@ int main(int argc, char** argv) {
 
 
         // send queued messages
-        txb_heartbeat();
+//        txb_heartbeat();
 
         //Mag-switch Arming Alert
         indicator_buzzer_heartbeat(stage);
