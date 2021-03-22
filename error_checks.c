@@ -61,24 +61,23 @@ bool check_bus_overcurrent_error(void){
 static uint32_t indicator_buzzer_last_millis = 0;
 static bool buzzer_on = false;
 void indicator_buzzer_heartbeat(uint8_t stage){
-
-    int loop_time = millis() - indicator_buzzer_last_millis;
     // 4 Beep speeds: Slow(1) - Startup and after landing
     // Medium(2) - At ~2000 ft to verify reading altitude correctly
     // Fast(3) - Mag Switches are activated
     // Fastest(4) - Imminent deployment
     // Constant (5) - Error
-    
-    if (stage != 0 && buzzer_on == false && loop_time < 200){
-        BUZZER_ON();
+    if (stage == 0) return;
+
+    int loop_time = millis() - indicator_buzzer_last_millis;
+
+    if (!buzzer_on && loop_time > 250*(5 - stage)) {
         buzzer_on = true;
+        BUZZER_ON();
         RED_LED_ON();
-    }
-    else if (stage != 0 && buzzer_on == true && loop_time > 200*(5-stage)){
-        BUZZER_OFF();
+    } else if (stage < 5 && buzzer_on && loop_time > 500*(5 - stage)) {
         buzzer_on = false;
+        BUZZER_OFF();
         RED_LED_OFF();
-    }else if(loop_time >= 2000){
         indicator_buzzer_last_millis = millis();
     }
 }
@@ -117,7 +116,7 @@ void update_batt_curr_low_pass(void){
     double new_curr_reading = ADCC_GetSingleConversion(channel_BATT_CURR)*BATT_CURR_SCALAR;
 
     low_pass_curr = alpha_low*low_pass_curr + (1.0 - alpha_low)*new_curr_reading;
-            
+
     low_low_pass_curr = alpha_low_low*low_low_pass_curr + (1.0 - alpha_low_low)*new_curr_reading;
 
 }
