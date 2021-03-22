@@ -27,7 +27,8 @@ typedef enum {
     Armed_State,
     Fire_State,
     Landed_State,
-    Error_State
+    Error_State,
+    Initialize_State
 } systemState_t;
 
 // Memory pool for CAN transmit buffer
@@ -49,21 +50,21 @@ int main(int argc, char** argv) {
     /***********set up CAN**********/
 
     // Set up CAN TX
-    TRISC0 = 0;
-    RC0PPS = 0x33;
+    //TRISC0 = 0;
+    //RC0PPS = 0x33;
 
     // Set up CAN RX
-    TRISC1 = 1;
-    ANSELC1 = 0;
-    CANRXPPS = 0x11;
+    //TRISC1 = 1;
+    //ANSELC1 = 0;
+    //CANRXPPS = 0x11;
 
     // set up CAN module
-    can_timing_t can_setup;
-    can_generate_timing_params(_XTAL_FREQ, &can_setup);
+    //can_timing_t can_setup;
+    //can_generate_timing_params(_XTAL_FREQ, &can_setup);
 
-    can_init(&can_setup, can_msg_handler);
+    //can_init(&can_setup, can_msg_handler);
     // set up CAN tx buffer
-    txb_init(tx_pool, sizeof(tx_pool), can_send, can_send_rdy);
+    //txb_init(tx_pool, sizeof(tx_pool), can_send, can_send_rdy);
 
 
     uint32_t last_millis = millis();
@@ -73,7 +74,7 @@ int main(int argc, char** argv) {
     uint32_t main_deploy_time = 0;
     uint32_t last_altitude_time = millis();
 
-    systemState_t systemState = Startup_State;
+    systemState_t systemState = Initialize_State;
     /***************Main Loop***************/
     while(1){
 
@@ -103,14 +104,14 @@ int main(int argc, char** argv) {
                                   SENSOR_ARM_BATT_1,
                                   (uint16_t)(ADCC_GetSingleConversion(channel_BATTERY_1)*ANALOG_SCALAR),
                                   &bat_1_v_msg);
-            txb_enqueue(&bat_1_v_msg);
+            //txb_enqueue(&bat_1_v_msg);
 
             can_msg_t bat_2_v_msg;
             build_analog_data_msg(millis(),
                                   SENSOR_ARM_BATT_2,
                                   (uint16_t)(ADCC_GetSingleConversion(channel_BATTERY_2)*ANALOG_SCALAR),
                                   &bat_2_v_msg);
-            txb_enqueue(&bat_2_v_msg);
+            //txb_enqueue(&bat_2_v_msg);
 
             //Mag Switch Voltage Messages
             can_msg_t mag_1_v_msg;
@@ -118,14 +119,14 @@ int main(int argc, char** argv) {
                                   SENSOR_MAG_1,
                                   (uint16_t)(ADCC_GetSingleConversion(channel_MAG_1)*ANALOG_SCALAR),
                                   &mag_1_v_msg);
-            txb_enqueue(&mag_1_v_msg);
+            //txb_enqueue(&mag_1_v_msg);
 
             can_msg_t mag_2_v_msg;
             build_analog_data_msg(millis(),
                                   SENSOR_MAG_2,
                                   (uint16_t)(ADCC_GetSingleConversion(channel_MAG_2)*ANALOG_SCALAR),
                                   &mag_2_v_msg);
-            txb_enqueue(&mag_2_v_msg);
+            //txb_enqueue(&mag_2_v_msg);
 
             // Current Messages
             can_msg_t batt_curr_msg;
@@ -133,14 +134,14 @@ int main(int argc, char** argv) {
                                   SENSOR_BATT_CURR,
                                   get_batt_curr_low_low_pass(),
                                   &batt_curr_msg);
-            txb_enqueue(&batt_curr_msg);
+            //txb_enqueue(&batt_curr_msg);
 
             can_msg_t bus_curr_msg;
             build_analog_data_msg(millis(),
                                   SENSOR_BUS_CURR,
                                   (uint16_t)(ADCC_GetSingleConversion(channel_CAN_CURR)*CAN_CURR_SCALAR),
                                   &bus_curr_msg);
-            txb_enqueue(&bus_curr_msg);
+            //txb_enqueue(&bus_curr_msg);
 
         }
 
@@ -159,18 +160,27 @@ int main(int argc, char** argv) {
             txb_enqueue(&altitude_msg);
             altitude = get_altitude();
             last_altitude_time = millis();
-            stage = 1;
-        }
-
-        if (millis() - last_altitude_time >= 100){  // Not sure what we want this number to be
-            systemState = Error_State;
         }
 
         switch (systemState){
+            case Initialize_State:
+            {
+                if (mag1_active() == true /*|| mag2_active() == true*/){
+                    systemState = Error_State;
+                }
+                else if (altitude != -999){
+                    systemState = Startup_State;
+              } 
+            }
+            break;
+            
             case Startup_State:
             {
                 stage = 1;
-                if (mag1_active() == true || mag2_active() == true){
+                if (mag1_active() == true /*|| mag2_active() == true*/){
+                    systemState = Error_State;
+                }
+                else if (millis() - last_altitude_time >= 10000000){  // Not sure what we want this number to be
                     systemState = Error_State;
                 }
 
@@ -182,10 +192,10 @@ int main(int argc, char** argv) {
             case FinalAscent_State:
             {
                 stage = 2;
-                if ((mag1_active() == true || mag2_active() == true) && altitude < 3500 + field_asl){
+                if ((mag1_active() == true /*|| mag2_active() == true*/) && altitude < 3500 + field_asl){
                     systemState = Error_State;
                 }
-                else if (mag1_active() == true && mag2_active() == true && altitude >= 3500 + field_asl){
+                else if (mag1_active() == true /*&& mag2_active() == true*/ && altitude >= 3500 + field_asl){
                     systemState = Armed_State;
                 }
             }
@@ -225,7 +235,7 @@ int main(int argc, char** argv) {
 
 
         // send queued messages
-        txb_heartbeat();
+        //txb_heartbeat();
 
         //Mag-switch Arming Alert
         indicator_buzzer_heartbeat(stage);
@@ -239,6 +249,7 @@ static void __interrupt() interrupt_handler(){
     if (PIE3bits.TMR0IE == 1 && PIR3bits.TMR0IF == 1) {
         timer0_handle_interrupt();
         PIR3bits.TMR0IF = 0;
+        return;
     }
     if (PIR5) {
         can_handle_interrupt();
