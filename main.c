@@ -86,6 +86,15 @@ int main(int argc, char** argv) {
 
             // Toggle the white LED
             LATC5 = ~PORTCbits.RC5;
+            
+            // Toggle Blue and Red LEDs according to state
+            
+            if (stage == 4){
+                LATC6 = ~PORTCbits.RC6;
+            } else if (stage == 5) {
+                LATC6 = ~PORTCbits.RC6;
+                LATC7 = ~PORTCbits.RC7;
+            }
 
             /***********Status Messages***********/
 
@@ -175,6 +184,7 @@ int main(int argc, char** argv) {
 
                 else if (altitude != -999) {
                     systemState = Startup_State;
+                    RED_LED_ON();
                 }
             }
             break;
@@ -187,6 +197,8 @@ int main(int argc, char** argv) {
 
                 else if (altitude >= 2000 + field_asl){
                     systemState = FinalAscent_State;
+                    RED_LED_OFF();
+                    BLUE_LED_ON();
                 }
             }
             break;
@@ -198,6 +210,8 @@ int main(int argc, char** argv) {
                 }
                 else if (mag1_active() == true /*&& mag2_active() == true*/ && altitude >= 3500 + field_asl){
                     systemState = Armed_State;
+                    RED_LED_ON();
+                    BLUE_LED_ON();
                 }
             }
             break;
@@ -205,6 +219,7 @@ int main(int argc, char** argv) {
             {
                 stage = 3;
                 if (altitude <= 2500 + field_asl){
+                    RED_LED_ON();
                     systemState = Fire_State;
                 }
             }
@@ -229,7 +244,6 @@ int main(int argc, char** argv) {
             case Error_State:
             {
                 stage = 5;
-                BLUE_LED_ON();
             }
             break;
         }

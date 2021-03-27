@@ -69,11 +69,11 @@ void indicator_buzzer_heartbeat(uint8_t stage){
     if (stage == 0) {
         buzzer_on = false;
         BUZZER_OFF();
-        RED_LED_OFF();
+        
     } else if (stage == 5) {
         buzzer_on = true;
         BUZZER_ON();
-        RED_LED_ON();
+        
     } else {
         uint32_t loop_time = millis() - indicator_buzzer_last_millis;
         if (loop_time > 250*(5 - stage)) {
@@ -81,10 +81,9 @@ void indicator_buzzer_heartbeat(uint8_t stage){
             buzzer_on = !buzzer_on;
             if (buzzer_on) {
                 BUZZER_ON();
-                RED_LED_ON();
             } else {
                 BUZZER_OFF();
-                RED_LED_OFF();
+                
             }
         }
     }
