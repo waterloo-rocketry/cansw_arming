@@ -10,17 +10,12 @@ int32_t get_altitude(void);
 
 bool new_altitude_available(void);
 
-#ifndef UNIT_TEST
 #include <xc.h>
+#include "canlib/pic18f26k83/pic18f26k83_timer.h"
 
 void uart1_rx_init(uint32_t baud, uint32_t osc_freq);
 
 void uart1_handle_interrupt(void);
-#else
-void init_srb(void);
-
-void get_rx_buf_ptr( srb_ctx_t **buf_ptr);
-#endif
 
 void parse_altitude(void);
 
