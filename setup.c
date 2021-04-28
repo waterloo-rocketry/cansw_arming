@@ -29,13 +29,13 @@ void output_init(void){
 }
 
 void osc_init(void){
-    // Select external oscillator with PLL of 1:1
-    OSCCON1 = 0b01110000;
+    // Select external oscillator with PLL of 4:1
+    OSCCON1 = 0b00100000;
     // wait until the clock switch has happened
     while (OSCCON3bits.ORDY == 0)  {}
     // if the currently active clock (CON2) isn't the selected clock (CON1)
-    if (OSCCON2 != 0b01110000) {
-        // infinite loop, something is broken, what even is an assert()?
-        while (1) {}
+    if (OSCCON2 != 0b00100000) {
+        //something is broken, maybe if we turn it off and on again?
+        RESET();
     }
 }
