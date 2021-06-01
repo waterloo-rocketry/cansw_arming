@@ -14,7 +14,7 @@
 #include "error_checks.h"
 #include "mcc_generated_files/mcc.h"
 
-#define _XTAL_FREQ 48000000 //48MHz
+#define _XTAL_FREQ 12000000 //12MHz
 
 static void can_msg_handler(const can_msg_t *msg);
 static void send_status_ok(void);
