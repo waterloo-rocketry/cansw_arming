@@ -23,7 +23,6 @@ bool new_altitude_available(void){
 }
 
 void uart1_rx_init(uint32_t baud, uint32_t osc_freq){
-
     memset(string, 0, strlen(string));
     // set up a ring buffer for receiving data
     srb_init(&rx_buf, rx_pool, sizeof(rx_pool), sizeof(char));
@@ -54,7 +53,6 @@ void uart1_rx_init(uint32_t baud, uint32_t osc_freq){
     PIE3bits.U1RXIE = 1; // enable interrupts
     U1ERRIEbits.FERIE = 1; // enable framing error interrupt
     U1ERRIEbits.RXFOIE = 1; // enable overflow error interrupt
-
 }
 
 void uart1_handle_interrupt(void){
@@ -85,6 +83,4 @@ void parse_altitude(void){
             new_altitude = true;
         }
     }
-
-
 }

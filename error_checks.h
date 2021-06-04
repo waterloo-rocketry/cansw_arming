@@ -3,6 +3,7 @@
 
 #include <stdbool.h>
 #include <stdint.h>
+#include "setup.h"
 
 #define MIN_BATTERY_THRESHOLD 2000 // in mV, the minimum voltage to recognize a battery as plugged in
 #define UNDERVOLTAGE_THRESHOLD 5000 // in mV
@@ -13,7 +14,7 @@ bool check_battery_voltage_error(void);
 
 bool check_bus_overcurrent_error(void);
 
-void indicator_buzzer_heartbeat(uint8_t stage);
+void indicator_led_heartbeat(systemState_t state);
 
 bool battery1_active(void);
 

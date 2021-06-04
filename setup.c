@@ -19,12 +19,12 @@ void output_init(void){
     TRISB4 = 0; // set B4 as an output for the indicator buzzer
     LATB4 = 0; // turn off the buzzer
 
-    // Altimeter Arming
-    TRISC3 = 0; // set C3 as an output for arming A1
-    LATC3 = 0; // arm altimeter 1
+    // Charges
+    TRISC3 = 0; // set C3 as an output for triggering M1
+    LATC3 = 0; // don't trigger M1
 
-    TRISC2 = 0; // set C2 as an output for arming A2
-    LATC2 = 0; // arm altimeter 2
+    TRISC2 = 0; // set C2 as an output for triggering M2
+    LATC2 = 0; // don't trigger M2
 }
 
 void osc_init(void){

@@ -58,34 +58,58 @@ bool check_bus_overcurrent_error(void){
     return true;
 }
 
-static uint32_t indicator_buzzer_last_millis = 0;
-static bool buzzer_on = false;
-void indicator_buzzer_heartbeat(uint8_t stage){
-    // 4 Beep speeds: Slow(1) - Startup and after landing
-    // Medium(2) - At ~2000 ft to verify reading altitude correctly
-    // Fast(3) - Mag Switches are activated
-    // Fastest(4) - Imminent deployment
-    // Constant (5) - Error
-    if (stage == 0) {
-        buzzer_on = false;
-        BUZZER_OFF();
-        
-    } else if (stage == 5) {
-        buzzer_on = true;
-        BUZZER_ON();
-        
-    } else {
-        uint32_t loop_time = millis() - indicator_buzzer_last_millis;
-        if (loop_time > 250*(5 - stage)) {
-            indicator_buzzer_last_millis = millis();
-            buzzer_on = !buzzer_on;
-            if (buzzer_on) {
-                BUZZER_ON();
-            } else {
-                BUZZER_OFF();
-                
-            }
-        }
+static uint32_t indicator_led_last_millis = 0;
+bool flash_state = false;
+void indicator_led_heartbeat(systemState_t state){
+    /*
+    R B W  leds, can be on (Y), off (N) or flashing (F)
+    N N Y  initialize
+    N Y Y  startup
+    N F F  finalascent
+    F N N  armed
+    Y N N  fire
+    N Y N  landed
+    F F F  error
+    */
+    if (millis() - indicator_led_last_millis > 250) {
+        flash_state = !flash_state;
+    }
+    switch (state) {
+        case Initialize_State:
+            RED_LED_OFF();
+            BLUE_LED_OFF();
+            WHITE_LED_ON();
+            break;
+        case Startup_State:
+            RED_LED_OFF();
+            BLUE_LED_ON();
+            WHITE_LED_ON();
+            break;
+        case FinalAscent_State:
+            RED_LED_OFF();
+            BLUE_LED_SET(flash_state);
+            WHITE_LED_SET(flash_state);
+            break;
+        case Armed_State:
+            RED_LED_SET(flash_state);
+            BLUE_LED_OFF();
+            WHITE_LED_OFF();
+            break;
+        case Fire_State:
+            RED_LED_ON();
+            BLUE_LED_OFF();
+            WHITE_LED_OFF();
+            break;
+        case Landed_State:
+            RED_LED_OFF();
+            BLUE_LED_ON();
+            WHITE_LED_OFF();
+            break;
+        case Error_State:
+            RED_LED_SET(flash_state);
+            BLUE_LED_SET(flash_state);
+            WHITE_LED_SET(flash_state);
+            break;
     }
 }
 
