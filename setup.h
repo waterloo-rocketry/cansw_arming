@@ -5,18 +5,19 @@
 #include "canlib/pic18f26k83/pic18f26k83_timer.h"
 #include "mcc_generated_files/mcc.h"
 
-#define FIELD_ASL 1050
+#define FIELD_ASL 0
 // Time between main loop code execution
 #define MAX_LOOP_TIME_DIFF_ms 1000
 // Time between "high speed" sensor checks
 #define MAX_SENSOR_LOOP_TIME_DIFF_ms 5
 // Time at startup after which if we don't have an altitude we error
-#define MAX_ALTITUDE_STARTUP_ms 10000
+#define MAX_ALTITUDE_STARTUP_ms 2000
 
 typedef enum {
     Initialize_State,
     Startup_State,
     FinalAscent_State,
+    PreArmed_State,
     Armed_State,
     Fire_State,
     Landed_State,

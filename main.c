@@ -145,7 +145,7 @@ int main(int argc, char** argv) {
             last_altitude_millis = millis();
         }
 
-        if (altitude == -999 && millis() - last_altitude_millis >= MAX_ALTITUDE_STARTUP_ms){  // Not sure what we want this number to be
+        if (millis() - last_altitude_millis >= MAX_ALTITUDE_STARTUP_ms){  // Not sure what we want this number to be
             systemState = Error_State;
         }
 
@@ -174,10 +174,20 @@ int main(int argc, char** argv) {
             break;
             case FinalAscent_State:
             {
-                if ((mag1_active() == true || mag2_active() == true) && altitude < 3500 + FIELD_ASL){
+                if (mag1_active() == true || mag2_active() == true){
                     systemState = Error_State;
                 }
-                else if (mag1_active() == true && mag2_active() == true && altitude >= 3500 + FIELD_ASL){
+                else if (altitude >= 3500 + FIELD_ASL){
+                    systemState = PreArmed_State;
+                }
+            }
+            break;
+            case PreArmed_State:
+            {
+                if (altitude < 3500 + FIELD_ASL) {
+                    systemState = FinalAscent_State;
+                }
+                else if (mag1_active() == true || mag2_active() == true) {
                     systemState = Armed_State;
                 }
             }

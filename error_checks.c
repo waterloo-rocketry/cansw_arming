@@ -66,12 +66,14 @@ void indicator_led_heartbeat(systemState_t state){
     N N Y  initialize
     N Y Y  startup
     N F F  finalascent
+    Y Y N  prearmed
     F N N  armed
     Y N N  fire
     N Y N  landed
     F F F  error
     */
     if (millis() - indicator_led_last_millis > 250) {
+        indicator_led_last_millis = millis();
         flash_state = !flash_state;
     }
     switch (state) {
@@ -89,6 +91,11 @@ void indicator_led_heartbeat(systemState_t state){
             RED_LED_OFF();
             BLUE_LED_SET(flash_state);
             WHITE_LED_SET(flash_state);
+            break;
+        case PreArmed_State:
+            RED_LED_ON();
+            BLUE_LED_ON();
+            WHITE_LED_OFF();
             break;
         case Armed_State:
             RED_LED_SET(flash_state);
@@ -126,7 +133,8 @@ bool mag1_active(void){
 }
 
 bool mag2_active(void){
-    return (uint16_t)ADCC_GetSingleConversion(channel_MAG_2)*ANALOG_SCALAR > MIN_BATTERY_THRESHOLD;
+    return mag1_active();
+//    return (uint16_t)ADCC_GetSingleConversion(channel_MAG_2)*ANALOG_SCALAR > MIN_BATTERY_THRESHOLD;
 }
 
 
