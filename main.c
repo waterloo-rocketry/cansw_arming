@@ -63,7 +63,7 @@ int main(int argc, char** argv) {
 
     /***************Main Loop***************/
     while(1){
-        CLRWDT(); //every loop resets the WatchDog Timer, it is set up to reset the board if we go more than 1 ms without reset
+        CLRWDT(); //every loop resets the WatchDog Timer, it is set up to reset the board if we go more than 2s without reset
 
         //status updates every MAX_LOOP_TIME
         if(millis() >= last_status_millis + MAX_LOOP_TIME_DIFF_ms){
@@ -74,12 +74,13 @@ int main(int argc, char** argv) {
             //General Status Messages
             bool status_ok = true;
             status_ok &= check_battery_voltage_error();
+            if (!status_ok) {
+                systemState = Error_State;
+            }
             status_ok &= check_bus_overcurrent_error();
             //TODO: CHECK IF Watch Dog timer window violation has ocured
             if (status_ok){
                 send_status_ok();
-            } else {
-                systemState = Error_State;
             }
 
             //Battery Status Messages
@@ -145,9 +146,13 @@ int main(int argc, char** argv) {
             last_altitude_millis = millis();
         }
 
-        if (millis() - last_altitude_millis >= MAX_ALTITUDE_STARTUP_ms){  // Not sure what we want this number to be
+        if (altitude == -999 && millis() - last_altitude_millis >= MAX_ALTITUDE_STARTUP_ms){  // Not sure what we want this number to be
             systemState = Error_State;
         }
+        if (altitude != -999 && millis() - last_altitude_millis >= MAX_ALTITUDE_INTERVAL_ms){  // Not sure what we want this number to be
+            systemState = Error_State;
+        }
+
 
         switch (systemState){
             case Initialize_State:
@@ -184,10 +189,10 @@ int main(int argc, char** argv) {
             break;
             case PreArmed_State:
             {
-                if (altitude < 3500 + FIELD_ASL) {
-                    systemState = FinalAscent_State;
-                }
-                else if (mag1_active() == true || mag2_active() == true) {
+//                if (altitude < 3500 + FIELD_ASL) {
+//                    systemState = FinalAscent_State;
+//                }
+                /*else*/ if (mag1_active() == true && mag2_active() == true) {
                     systemState = Armed_State;
                 }
             }

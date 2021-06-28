@@ -73,7 +73,7 @@
 #pragma config XINST = OFF    // Extended Instruction Set Enable bit->Extended Instruction Set and Indexed Addressing Mode disabled
 
 // CONFIG3L
-#pragma config WDTCPS = WDTCPS_8    // WDT Period selection bits->Divider ratio 1:8192
+#pragma config WDTCPS = WDTCPS_11    // WDT Period selection bits->Divider ratio 1:65536
 #pragma config WDTE = ON    // WDT operating mode->WDT enabled regardless of sleep
 
 // CONFIG3H

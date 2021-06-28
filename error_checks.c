@@ -133,8 +133,7 @@ bool mag1_active(void){
 }
 
 bool mag2_active(void){
-    return mag1_active();
-//    return (uint16_t)ADCC_GetSingleConversion(channel_MAG_2)*ANALOG_SCALAR > MIN_BATTERY_THRESHOLD;
+    return (uint16_t)ADCC_GetSingleConversion(channel_MAG_2)*ANALOG_SCALAR > MIN_BATTERY_THRESHOLD;
 }
 
 
