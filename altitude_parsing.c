@@ -1,8 +1,13 @@
 #include "altitude_parsing.h"
 
 static int32_t altitude = -999;
+static int32_t prev_altitude = -999;
+static uint32_t time = 0;
+static uint32_t prev_time = 0;
+static int32_t velocity = 0;
+
 static bool new_altitude = false;
-static char string[16];
+static char string[16]; //string for new altitude data
 
 char rx_pool[32]; // 32 bytes should be plenty
 
@@ -11,6 +16,10 @@ static srb_ctx_t rx_buf;
 int32_t get_altitude(void){
     new_altitude = false;
     return altitude;
+}
+
+int32_t get_velocity(void){
+    return velocity;
 }
 
 bool new_altitude_available(void){
@@ -75,9 +84,15 @@ void parse_altitude(void){
             strncat(string, &element, 1);
         }
         else if(strlen(string) > 0){ // if we hit a line ending, and our string has a number to read:
-            altitude = strtol(string, NULL, 10);    // read the altitude from the received string
-            memset(string, 0, strlen(string));  // and clear the string so we can start again
+            altitude = strtol(string, NULL, 10);    // read the new altitude from the received string
+            memset(string, 0, strlen(string));  //clear the string so we can start parsing again
             new_altitude = true;
+            if(prev_time - millis() >= 50){
+                velocity = 1000*(altitude - prev_altitude)/(millis() - prev_time);
+                prev_altitude = altitude; //store the previous altitude
+                prev_time = millis(); //store the previous time
+            }
+            
         }
     }
 

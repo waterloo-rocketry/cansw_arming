@@ -8,6 +8,8 @@
 
 int32_t get_altitude(void);
 
+int32_t get_velocity(void);
+
 bool new_altitude_available(void);
 
 #include <xc.h>
