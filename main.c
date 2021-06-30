@@ -163,7 +163,9 @@ int main(int argc, char** argv) {
             can_msg_t altitude_msg;
             build_altitude_data_msg(millis(), get_altitude(), &altitude_msg);
             txb_enqueue(&altitude_msg);
-            
+        }
+        
+        if (new_velocity_available()){
             can_msg_t velocity_msg;
             build_analog_data_msg(millis(),
                                   SENSOR_VELOCITY,
