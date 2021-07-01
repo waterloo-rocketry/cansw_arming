@@ -5,14 +5,12 @@
 #include "canlib/pic18f26k83/pic18f26k83_timer.h"
 #include "mcc_generated_files/mcc.h"
 
-#define FIELD_ASL 0
+#define FIELD_ASL 1000
 // Time between main loop code execution
 #define MAX_LOOP_TIME_DIFF_ms 1000
 // Time between "high speed" sensor checks
 #define MAX_SENSOR_LOOP_TIME_DIFF_ms 5
-// Time at startup after which if we don't have an altitude we error. In testing this takes 42 seconds.
-#define MAX_ALTITUDE_STARTUP_ms 60000
-// Time after getting a first altitude after which if we don't have an altitude we error
+// Time after after which if we don't have an altitude we error.
 #define MAX_ALTITUDE_INTERVAL_ms 2000
 
 typedef enum {

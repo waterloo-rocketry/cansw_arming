@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 
 #include "canlib/can.h"
 #include "canlib/can_common.h"
@@ -11,6 +12,7 @@
 
 #include "setup.h"
 #include "altitude_parsing.h"
+#include "sensor_altitude.h"
 #include "error_checks.h"
 #include "mcc_generated_files/mcc.h"
 
@@ -21,6 +23,8 @@ static void send_status_ok(void);
 
 // Memory pool for CAN transmit buffer
 uint8_t tx_pool[500];
+
+int32_t altitude = -999;
 
 int main(int argc, char** argv) {
     // init functions
@@ -57,7 +61,7 @@ int main(int argc, char** argv) {
     uint32_t last_status_millis = millis();
     uint32_t last_sensor_millis = millis();
     uint32_t last_altitude_millis = millis();
-    int32_t altitude = -999;
+    uint32_t last_sensor_altitude_millis = millis();
     uint32_t main_deploy_time = 0;
     systemState_t systemState = Initialize_State;
 
@@ -76,6 +80,9 @@ int main(int argc, char** argv) {
             status_ok &= check_battery_voltage_error();
             if (!status_ok) {
                 systemState = Error_State;
+                can_msg_t debug_msg;
+                build_debug_printf("BAD STAT", &debug_msg);
+                txb_enqueue(&debug_msg);
             }
             status_ok &= check_bus_overcurrent_error();
             //TODO: CHECK IF Watch Dog timer window violation has ocured
@@ -138,62 +145,92 @@ int main(int argc, char** argv) {
 
         //handle altitude data, send message if new altitude received
         parse_altitude();
-        if (new_altitude_available()){
+        if (new_sensor_altitude_available()){
+            altitude = get_sensor_altitude();
+            can_msg_t altitude_msg;
+            build_altitude_data_msg(millis(), altitude, &altitude_msg);
+            txb_enqueue(&altitude_msg);
+            last_sensor_altitude_millis = millis();
+            last_altitude_millis = millis();
+        } else if (millis() - last_sensor_altitude_millis >= MAX_ALTITUDE_INTERVAL_ms && new_altitude_available()) {
             altitude = get_altitude();
             can_msg_t altitude_msg;
             build_altitude_data_msg(millis(), altitude, &altitude_msg);
             txb_enqueue(&altitude_msg);
             last_altitude_millis = millis();
+            can_msg_t debug_msg;
+            build_debug_printf("NO SENSR", &debug_msg);
+            txb_enqueue(&debug_msg);
         }
-
-        if (altitude == -999 && millis() - last_altitude_millis >= MAX_ALTITUDE_STARTUP_ms){  // Not sure what we want this number to be
+        
+        if (millis() - last_altitude_millis >= MAX_ALTITUDE_INTERVAL_ms * 2){  // Not sure what we want this number to be
             systemState = Error_State;
-        }
-        if (altitude != -999 && millis() - last_altitude_millis >= MAX_ALTITUDE_INTERVAL_ms){  // Not sure what we want this number to be
-            systemState = Error_State;
+            can_msg_t debug_msg;
+            build_debug_printf("NO ALT  ", &debug_msg);
+            txb_enqueue(&debug_msg);
         }
 
 
         switch (systemState){
             case Initialize_State:
             {
-                if (mag1_active() == true || mag2_active() == true){
-                    systemState = Error_State;
-                }
+//                if (mag1_active() == true || mag2_active() == true){
+//                    systemState = Error_State;
+//                    can_msg_t debug_msg;
+//                    build_debug_printf("ARM INIT", &debug_msg);
+//                    txb_enqueue(&debug_msg);
+//                }
 
-                else if (altitude != -999){
+                /*else*/ if (altitude != -999){
                     systemState = Startup_State;
+                    can_msg_t debug_msg;
+                    build_debug_printf("STARTUP ", &debug_msg);
+                    txb_enqueue(&debug_msg);
                 }
             }
             break;
             case Startup_State:
             {
-                if (mag1_active() == true || mag2_active() == true){
-                    systemState = Error_State;
-                }
-
-                else if (altitude >= 2000 + FIELD_ASL){
+                if (altitude >= 2000 + FIELD_ASL){
                     systemState = FinalAscent_State;
+                    can_msg_t debug_msg;
+                    build_debug_printf("FINALASC", &debug_msg);
+                    txb_enqueue(&debug_msg);
+                } else  if (mag1_active() == true || mag2_active() == true){
+                    systemState = Error_State;
+                    can_msg_t debug_msg;
+                    build_debug_printf("ARM STAR", &debug_msg);
+                    txb_enqueue(&debug_msg);
                 }
             }
             break;
             case FinalAscent_State:
             {
-                if (mag1_active() == true || mag2_active() == true){
-                    systemState = Error_State;
-                }
-                else if (altitude >= 3500 + FIELD_ASL){
+                if (altitude >= 3500 + FIELD_ASL){
                     systemState = PreArmed_State;
+                    can_msg_t debug_msg;
+                    build_debug_printf("PREARMED", &debug_msg);
+                    txb_enqueue(&debug_msg);
+                } else if (mag1_active() == true || mag2_active() == true){
+                    systemState = Error_State;
+                    can_msg_t debug_msg;
+                    build_debug_printf("ARM FINA", &debug_msg);
+                    txb_enqueue(&debug_msg);
                 }
             }
             break;
             case PreArmed_State:
             {
-//                if (altitude < 3500 + FIELD_ASL) {
-//                    systemState = FinalAscent_State;
-//                }
-                /*else*/ if (mag1_active() == true && mag2_active() == true) {
+                if (altitude < 3500 + FIELD_ASL) {
+                    systemState = FinalAscent_State;
+                    can_msg_t debug_msg;
+                    build_debug_printf("BACKDOWN", &debug_msg);
+                    txb_enqueue(&debug_msg);
+                } else if (mag1_active() == true && mag2_active() == true) {
                     systemState = Armed_State;
+                    can_msg_t debug_msg;
+                    build_debug_printf("ARMED   ", &debug_msg);
+                    txb_enqueue(&debug_msg);
                 }
             }
             break;
@@ -201,6 +238,9 @@ int main(int argc, char** argv) {
             {
                 if (altitude <= 2500 + FIELD_ASL){
                     systemState = Fire_State;
+                    can_msg_t debug_msg;
+                    build_debug_printf("FIRE    ", &debug_msg);
+                    txb_enqueue(&debug_msg);
                 }
             }
             break;
@@ -209,9 +249,15 @@ int main(int argc, char** argv) {
                 if (altitude <= 2000 + FIELD_ASL && main_deploy_time == 0){
                     FIRE_A1(); //Fire Main Charge
                     main_deploy_time = millis();
+                    can_msg_t debug_msg;
+                    build_debug_printf("MAIN DEP", &debug_msg);
+                    txb_enqueue(&debug_msg);
                 }else if (main_deploy_time > 0 && millis() - main_deploy_time >= 2000){
                     FIRE_A2(); // Fire Backup Charge
                     systemState = Landed_State;
+                    can_msg_t debug_msg;
+                    build_debug_printf("BAK DEP ", &debug_msg);
+                    txb_enqueue(&debug_msg);
                 }
             }
             break;
@@ -245,8 +291,8 @@ static void __interrupt() interrupt_handler(){
     if (PIR5) {
         can_handle_interrupt();
     }
-    if(U1ERRIRbits.FERIF == 1 || U1ERRIRbits.RXFOIF){   // should probably do something if there is an error
-
+    if(U1ERRIRbits.FERIF == 1){   // If we have a framing error, discard the byte
+        char garbage = U1RXB; // read the next byte in the buffer to clear the garbage
     }
     else if (PIR3bits.U1RXIF == 1){
         uart1_handle_interrupt();
@@ -255,7 +301,9 @@ static void __interrupt() interrupt_handler(){
     else if(PIR3bits.U1EIF == 1){   // should probably do something if there is an error
         PIR3bits.U1EIF = 0;
     }
+    else if(U1ERRIRbits.RXFOIF == 1){ // should probably do something if the FIFO is overflowing
 
+    }
 }
 
 static void can_msg_handler(const can_msg_t *msg) {
@@ -271,6 +319,16 @@ static void can_msg_handler(const can_msg_t *msg) {
     enum ARM_STATE desired_arm_state = ARMED;
 
     switch (msg_type) {
+        case MSG_SENSOR_ANALOG: {
+            enum SENSOR_ID sensor_id;
+            uint16_t pressure;
+            get_analog_data(msg, &sensor_id, &pressure);
+            if (sensor_id == SENSOR_BARO) {
+                parse_sensor_altitude(pressure);
+            }
+            break;
+        }
+            
         case MSG_LEDS_ON:
             RED_LED_ON();
             BLUE_LED_ON();

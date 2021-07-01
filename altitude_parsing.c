@@ -10,10 +10,6 @@ char rx_pool[32]; // 32 bytes should be plenty
 static srb_ctx_t rx_buf;
 
 int32_t get_altitude(void){
-    if (startup_asl == -999){
-        startup_asl = altitude;
-        return altitude;
-    }
     new_altitude = false;
     return altitude+startup_asl;
 }
@@ -81,6 +77,11 @@ void parse_altitude(void){
             altitude = strtol(string, NULL, 10);    // read the altitude from the received string
             memset(string, 0, strlen(string));  // and clear the string so we can start again
             new_altitude = true;
+            
+            if (startup_asl == -999){
+                startup_asl = altitude;
+                altitude = 0;
+            }
         }
     }
 }
