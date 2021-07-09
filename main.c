@@ -223,7 +223,7 @@ static void __interrupt() interrupt_handler(){
         PIR3bits.U1EIF = 0;
     }
     else if(U1ERRIRbits.RXFOIF == 1){ // should probably do something if the FIFO is overflowing
-        
+        U1ERRIRbits.RXFOIF = 0;
     }
 
 }
