@@ -35,7 +35,7 @@ void osc_init(void){
     while (OSCCON3bits.ORDY == 0)  {}
     // if the currently active clock (CON2) isn't the selected clock (CON1)
     if (OSCCON2 != 0b01110000) {
-        // infinite loop, something is broken, what even is an assert()?
-        while (1) {}
+        //something is broken, maybe if we turn it off and on again?
+        RESET();
     }
 }

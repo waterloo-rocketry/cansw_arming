@@ -164,6 +164,15 @@ int main(int argc, char** argv) {
             build_altitude_data_msg(millis(), get_altitude(), &altitude_msg);
             txb_enqueue(&altitude_msg);
         }
+        
+        if (new_velocity_available()){
+            can_msg_t velocity_msg;
+            build_analog_data_msg(millis(),
+                                  SENSOR_VELOCITY,
+                                  get_velocity(),
+                                  &velocity_msg);
+            txb_enqueue(&velocity_msg);
+        }
         // set io to arm state of altimeter 1
         if(alt_1_arm_state == DISARMED) {
             DISARM_A1();
@@ -203,8 +212,8 @@ static void __interrupt() interrupt_handler(){
     if (PIR5) {
         can_handle_interrupt();
     }
-    if(U1ERRIRbits.FERIF == 1 || U1ERRIRbits.RXFOIF){   // should probably do something if there is an error
-
+    if(U1ERRIRbits.FERIF == 1){   // If we have a framing error, discard the byte
+        char garbage = U1RXB; // read the next byte in the buffer to clear the garbage
     }
     else if (PIR3bits.U1RXIF == 1){
         uart1_handle_interrupt();
@@ -212,6 +221,9 @@ static void __interrupt() interrupt_handler(){
     }
     else if(PIR3bits.U1EIF == 1){   // should probably do something if there is an error
         PIR3bits.U1EIF = 0;
+    }
+    else if(U1ERRIRbits.RXFOIF == 1){ // should probably do something if the FIFO is overflowing
+        U1ERRIRbits.RXFOIF = 0;
     }
 
 }
