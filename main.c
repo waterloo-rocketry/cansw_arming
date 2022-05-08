@@ -239,6 +239,7 @@ static void can_msg_handler(const can_msg_t *msg) {
     // declare this in advance cause we can't declare it inside the switch
     uint8_t alt_num = 0;
     enum ARM_STATE desired_arm_state = ARMED;
+    int dest_id = get_reset_board_id(msg); // the destination board id for reset
 
     switch (msg_type) {
         case MSG_ALT_ARM_CMD:
@@ -260,7 +261,8 @@ static void can_msg_handler(const can_msg_t *msg) {
             break;
             
         case MSG_RESET_CMD:
-            RESET();
+            if(dest_id == BOARD_UNIQUE_ID || dest_id == 0 ) { RESET(); }
+            break;
 
         default:
             // this is where we go for all the messages we don't care about
