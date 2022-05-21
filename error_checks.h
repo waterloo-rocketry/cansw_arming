@@ -12,6 +12,8 @@ bool check_battery_voltage_error(void);
 
 bool check_bus_overcurrent_error(void);
 
+bool check_watchdog_violation_error(void);
+
 void indicator_buzzer_heartbeat(void);
 
 bool battery1_active(void);

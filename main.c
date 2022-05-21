@@ -79,7 +79,7 @@ int main(int argc, char** argv) {
             bool status_ok = true;
             status_ok &= check_battery_voltage_error();
             status_ok &= check_bus_overcurrent_error();
-            //TODO: CHECK IF Watch Dog timer window violation has ocured
+            status_ok &= check_watchdog_violation_error();
             if (status_ok){
                 send_status_ok();
             }

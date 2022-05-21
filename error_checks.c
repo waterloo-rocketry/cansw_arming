@@ -58,6 +58,13 @@ bool check_bus_overcurrent_error(void){
     return true;
 }
 
+bool check_watchdog_violation_error(void){
+    if(!PCON0bits.WDTWV){
+        
+    }
+    return true;
+}
+
 static uint32_t indicator_buzzer_last_millis = 0;
 static bool buzzer_on = false;
 void indicator_buzzer_heartbeat(void){
