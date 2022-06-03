@@ -238,9 +238,17 @@ static void can_msg_handler(const can_msg_t *msg) {
 
     // declare this in advance cause we can't declare it inside the switch
     uint8_t alt_num = 0;
+    int cmd_type = -1;
     enum ARM_STATE desired_arm_state = ARMED;
 
     switch (msg_type) {
+        case MSG_GENERAL_CMD:
+            cmd_type = get_general_cmd_type(msg);
+            if (cmd_type == BUS_DOWN_WARNING) {
+                //empty handler
+            }
+            break;
+            
         case MSG_ALT_ARM_CMD:
             get_req_arm_state(msg, &alt_num, &desired_arm_state);
             if(alt_num == 1) { alt_1_arm_state = desired_arm_state; }
