@@ -19,8 +19,8 @@
 static void can_msg_handler(const can_msg_t *msg);
 static void send_status_ok(void);
 
-static enum ARM_STATE alt_1_arm_state = DISARMED;  // this should be ARMED for flight code
-static enum ARM_STATE alt_2_arm_state = DISARMED;
+static enum ARM_STATE alt_1_arm_state = ARMED;
+static enum ARM_STATE alt_2_arm_state = ARMED;
 
 // Memory pool for CAN transmit buffer
 uint8_t tx_pool[500];
