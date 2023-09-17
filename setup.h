@@ -32,7 +32,7 @@
 #define ANALOG_SCALAR 3.72
 // Current Monitorring
 #define BATT_CURR_SCALAR 2.50 // mA/mV
-#define CAN_CURR_SCALAR  0.25 // mA/mV NOTE this is not correct, it should be 0.05 but the board used for dev had an amp  with a gain of 20 instead of 100
+#define CAN_CURR_SCALAR  0.05 // mA/mV NOTE this is not correct, it should be 0.05 but the board used for dev had an amp  with a gain of 20 instead of 100
 
 void output_init(void);
 
