@@ -134,16 +134,23 @@ int main(int argc, char** argv) {
             txb_enqueue(&mag_2_v_msg);
             
             // Current Messages
-            can_msg_t batt_curr_msg;
+            can_msg_t batt1_curr_msg;
             build_analog_data_msg(millis(),
-                                  SENSOR_BATT_CURR,
-                                  get_batt_curr_low_low_pass(),
-                                  &batt_curr_msg);
-            txb_enqueue(&batt_curr_msg);
+                                  SENSOR_9V_BATT_CURR_1,
+                                  get_batt1_curr_low_low_pass(),
+                                  &batt1_curr_msg);
+            txb_enqueue(&batt1_curr_msg);
+            
+            can_msg_t batt2_curr_msg;
+            build_analog_data_msg(millis(),
+                                  SENSOR_9V_BATT_CURR_2,
+                                  get_batt2_curr_low_low_pass(),
+                                  &batt2_curr_msg);
+            txb_enqueue(&batt2_curr_msg);
             
             can_msg_t bus_curr_msg;
             build_analog_data_msg(millis(),
-                                  SENSOR_BUS_CURR,
+                                  SENSOR_5V_CURR,
                                   (uint16_t)(ADCC_GetSingleConversion(channel_CAN_CURR)*CAN_CURR_SCALAR),
                                   &bus_curr_msg);
             txb_enqueue(&bus_curr_msg);
@@ -229,6 +236,7 @@ static void __interrupt() interrupt_handler(){
 }
 
 static void can_msg_handler(const can_msg_t *msg) {
+    RED_LED_OFF();
     uint16_t msg_type = get_message_type(msg);
 
     // ignore messages that were sent from this board

@@ -50,7 +50,7 @@ bool check_bus_overcurrent_error(void){
         curr_data[1] = (bus_curr >> 0) & 0xff;
 
         can_msg_t error_msg;
-        build_board_stat_msg(millis(), E_BUS_OVER_CURRENT, curr_data, 2, &error_msg);
+        build_board_stat_msg(millis(), E_5V_OVER_CURRENT, curr_data, 2, &error_msg);
         txb_enqueue(&error_msg);
 
         return false;
@@ -124,21 +124,34 @@ bool mag2_active(void){
 #define LOW_LOW_PASS_RESPONSE_TIME 10  //seconds
 double alpha_low = LOW_PASS_ALPHA(LOW_PASS_RESPONSE_TIME);
 double alpha_low_low = LOW_PASS_ALPHA(LOW_LOW_PASS_RESPONSE_TIME);
-double low_pass_curr = 0;
-double low_low_pass_curr = 0;
+double low_pass_curr1 = 0;
+double low_low_pass_curr1 = 0;
+double low_pass_curr2 = 0;
+double low_low_pass_curr2 = 0;
+
 void update_batt_curr_low_pass(void){
-    double new_curr_reading = ADCC_GetSingleConversion(channel_BATT_CURR)*BATT_CURR_SCALAR;
-
-    low_pass_curr = alpha_low*low_pass_curr + (1.0 - alpha_low)*new_curr_reading;
-            
-    low_low_pass_curr = alpha_low_low*low_low_pass_curr + (1.0 - alpha_low_low)*new_curr_reading;
-
+    double new_curr1_reading = ADCC_GetSingleConversion(channel_BATT1_CURR)*BATT_CURR_SCALAR;
+    double new_curr2_reading = ADCC_GetSingleConversion(channel_BATT2_CURR)*BATT_CURR_SCALAR;
+    
+    low_pass_curr1 = alpha_low*low_pass_curr1 + (1.0 - alpha_low)*new_curr1_reading;
+    low_pass_curr2 = alpha_low*low_pass_curr2 + (1.0 - alpha_low)*new_curr2_reading;
+    
+    low_low_pass_curr1 = alpha_low_low*low_low_pass_curr1 + (1.0 - alpha_low_low)*new_curr1_reading;
+    low_low_pass_curr2 = alpha_low_low*low_low_pass_curr2 + (1.0 - alpha_low_low)*new_curr2_reading;
 }
 
-double get_batt_curr_low_pass(void){
-    return low_pass_curr;
+double get_batt1_curr_low_pass(void){
+    return low_pass_curr1;
 }
 
-double get_batt_curr_low_low_pass(void){
-    return low_low_pass_curr;
+double get_batt2_curr_low_pass(void){
+    return low_pass_curr2;
+}
+
+double get_batt1_curr_low_low_pass(void){
+    return low_low_pass_curr1;
+}
+
+double get_batt2_curr_low_low_pass(void){
+    return low_low_pass_curr2;
 }
