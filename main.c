@@ -236,7 +236,6 @@ static void __interrupt() interrupt_handler(){
 }
 
 static void can_msg_handler(const can_msg_t *msg) {
-    RED_LED_OFF();
     uint16_t msg_type = get_message_type(msg);
 
     // ignore messages that were sent from this board
