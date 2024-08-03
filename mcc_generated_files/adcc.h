@@ -98,7 +98,7 @@ typedef enum
     channel_A2_MAIN   = 0x9,
     channel_A1_DROGUE = 0xA,
     channel_A1_MAIN   = 0xB,
-    channel_BATT2_CURR = 0xC,
+    channel_BATT2_CURR = 0xD,
     channel_VSS       = 0x3B,
     channel_Temp      = 0x3C,
     channel_DAC1      = 0x3D,

@@ -131,17 +131,12 @@ double low_low_pass_curr2 = 0;
 
 void update_batt_curr_low_pass(void){
     double new_curr1_reading = ADCC_GetSingleConversion(channel_BATT1_CURR)*BATT_CURR_SCALAR;
+    double new_curr2_reading = ADCC_GetSingleConversion(channel_BATT2_CURR)*BATT_CURR_SCALAR;
     
     low_pass_curr1 = alpha_low*low_pass_curr1 + (1.0 - alpha_low)*new_curr1_reading;
+    low_pass_curr2 = alpha_low*low_pass_curr2 + (1.0 - alpha_low)*new_curr2_reading;
     
     low_low_pass_curr1 = alpha_low_low*low_low_pass_curr1 + (1.0 - alpha_low_low)*new_curr1_reading;
-
-    if (buzzer_on) {
-        return; // Buzzer causes ADC interference on curr2, so skip it
-    }
-    
-    double new_curr2_reading = ADCC_GetSingleConversion(channel_BATT2_CURR)*BATT_CURR_SCALAR;
-    low_pass_curr2 = alpha_low*low_pass_curr2 + (1.0 - alpha_low)*new_curr2_reading;
     low_low_pass_curr2 = alpha_low_low*low_low_pass_curr2 + (1.0 - alpha_low_low)*new_curr2_reading;
 }
 
