@@ -6,7 +6,7 @@
 #include "mcc_generated_files/mcc.h"
 
 // Time between main loop code execution
-#define MAX_LOOP_TIME_DIFF_ms 1000
+#define MAX_LOOP_TIME_DIFF_ms 500
 // Time between "high speed" sensor checks
 #define MAX_SENSOR_LOOP_TIME_DIFF_ms 5
 
