@@ -2,7 +2,7 @@
 #define	ARMING_H
 
 #include <xc.h>
-#include "canlib/pic18f26k83/pic18f26k83_timer.h"
+
 #include "mcc_generated_files/mcc.h"
 
 // Time between main loop code execution

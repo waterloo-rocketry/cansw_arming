@@ -1,3 +1,10 @@
+#include <xc.h>
+#include <string.h>
+
+#include "canlib/canlib.h"
+#include "canlib/util/safe_ring_buffer.h"
+#include "timer.h"
+
 #include "altitude_parsing.h"
 
 static int32_t altitude = -999;
