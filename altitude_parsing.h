@@ -1,8 +1,8 @@
 #ifndef ALTITUDE_PARSING_H
-#define	ALTITUDE_PARSING_H
+#define ALTITUDE_PARSING_H
 
-#include <stdint.h>
 #include <stdbool.h>
+#include <stdint.h>
 
 #define VELOCITY_ESTIMATION_INTERVAL 100 // in ms
 
@@ -20,5 +20,5 @@ void uart1_handle_interrupt(void);
 
 void parse_altitude(void);
 
-#endif	/* ALTITUDE_PARSING_H */
+#endif /* ALTITUDE_PARSING_H */
 

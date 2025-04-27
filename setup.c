@@ -1,7 +1,6 @@
 #include "setup.h"
 
-
-void output_init(void){
+void output_init(void) {
     // LEDs
     TRISC5 = 0; // set C5 as an output for the white LED
     ANSELC5 = 0; // Enable digital input buffer (Useful for reading the LED state)
@@ -25,17 +24,16 @@ void output_init(void){
 
     TRISC2 = 0; // set C2 as an output for arming A2
     LATC2 = 1; // arm altimeter 2
-
 }
 
-void osc_init(void){
+void osc_init(void) {
     // Select external oscillator with PLL of 1:1
     OSCCON1 = 0b01110000;
     // wait until the clock switch has happened
-    while (OSCCON3bits.ORDY == 0)  {}
+    while (OSCCON3bits.ORDY == 0) {}
     // if the currently active clock (CON2) isn't the selected clock (CON1)
     if (OSCCON2 != 0b01110000) {
-        //something is broken, maybe if we turn it off and on again?
+        // something is broken, maybe if we turn it off and on again?
         RESET();
     }
 }
