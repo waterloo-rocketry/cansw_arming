@@ -72,11 +72,11 @@ int main(int argc, char **argv) {
             // General Status Messages
             uint32_t status_bitfield = 0;
             if (!check_battery_voltage_error()) {
-                status_bitfield |= E_12V_OVER_VOLTAGE;
+                status_bitfield |= (1 << E_12V_OVER_VOLTAGE_OFFSET);
                 // FIXME: replace with a more approiate message
             }
             if (!check_bus_overcurrent_error()) {
-                status_bitfield |= E_5V_OVER_CURRENT;
+                status_bitfield |= (1 << E_5V_OVER_CURRENT_OFFSET);
             }
             // TODO: CHECK IF Watch Dog timer window violation has ocured
             can_msg_t board_stat_msg;
@@ -292,13 +292,8 @@ static void can_msg_handler(const can_msg_t *msg) {
             break;
 
         case MSG_RESET_CMD:
-            get_reset_board_id(msg, &dest_board_type_id, &dest_board_inst_id);
-            if (dest_board_type_id == 0) {
+            if (check_board_need_reset(msg)) {
                 RESET();
-            } else if (dest_board_type_id == BOARD_TYPE_UNIQUE_ID) {
-                if (dest_board_inst_id == BOARD_INST_UNIQUE_ID || dest_board_inst_id == 0) {
-                    RESET();
-                }
             }
             break;
 
