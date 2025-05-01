@@ -14,8 +14,8 @@
 
 static void can_msg_handler(const can_msg_t *msg);
 
-static can_alt_arm_state_t alt_1_arm_state = ALT_ARM_STATE_ARMED;
-static can_alt_arm_state_t alt_2_arm_state = ALT_ARM_STATE_ARMED;
+static can_alt_arm_state_t alt_raven_arm_state = ALT_ARM_STATE_ARMED;
+static can_alt_arm_state_t alt_stratologger_arm_state = ALT_ARM_STATE_ARMED;
 
 // Memory pool for CAN transmit buffer
 uint8_t tx_pool[500];
@@ -86,29 +86,29 @@ int main(int argc, char **argv) {
             txb_enqueue(&board_stat_msg);
 
             // Altimeter Status Messages
-            can_msg_t alt_1_arm_stat_msg;
+            can_msg_t alt_raven_arm_stat_msg;
             build_alt_arm_status_msg(
                 PRIO_HIGH,
                 millis(),
                 ALTIMETER_RAVEN,
-                alt_1_arm_state,
+                alt_raven_arm_state,
                 (uint16_t)(ADCC_GetSingleConversion(channel_A1_DROGUE) * ANALOG_SCALAR),
                 (uint16_t)(ADCC_GetSingleConversion(channel_A1_MAIN) * ANALOG_SCALAR),
-                &alt_1_arm_stat_msg
+                &alt_raven_arm_stat_msg
             );
-            txb_enqueue(&alt_1_arm_stat_msg);
+            txb_enqueue(&alt_raven_arm_stat_msg);
 
-            can_msg_t alt_2_arm_stat_msg;
+            can_msg_t alt_stratologger_arm_stat_msg;
             build_alt_arm_status_msg(
                 PRIO_HIGH,
                 millis(),
                 ALTIMETER_STRATOLOGGER,
-                alt_2_arm_state,
+                alt_stratologger_arm_state,
                 (uint16_t)(ADCC_GetSingleConversion(channel_A2_DROGUE) * ANALOG_SCALAR),
                 (uint16_t)(ADCC_GetSingleConversion(channel_A2_MAIN) * ANALOG_SCALAR),
-                &alt_2_arm_stat_msg
+                &alt_stratologger_arm_stat_msg
             );
-            txb_enqueue(&alt_2_arm_stat_msg);
+            txb_enqueue(&alt_stratologger_arm_stat_msg);
 
             // Battery Status Messages
             can_msg_t bat_1_v_msg;
@@ -206,7 +206,7 @@ int main(int argc, char **argv) {
             txb_enqueue(&velocity_msg);
         }
         // set io to arm state of altimeter 1
-        if (alt_1_arm_state == ALT_ARM_STATE_DISARMED) {
+        if (alt_raven_arm_state == ALT_ARM_STATE_DISARMED) {
             DISARM_A1();
             RED_LED_OFF();
         } else {
@@ -215,7 +215,7 @@ int main(int argc, char **argv) {
         }
 
         // set io to arm state of altimeter 2
-        if (alt_2_arm_state == ALT_ARM_STATE_DISARMED) {
+        if (alt_stratologger_arm_state == ALT_ARM_STATE_DISARMED) {
             DISARM_A2();
             BLUE_LED_OFF();
         } else {
@@ -272,10 +272,10 @@ static void can_msg_handler(const can_msg_t *msg) {
         case MSG_ALT_ARM_CMD:
             get_alt_arm_state(msg, &alt_id, &desired_arm_state);
             if (alt_id == ALTIMETER_RAVEN) {
-                alt_1_arm_state = desired_arm_state;
+                alt_raven_arm_state = desired_arm_state;
             }
             if (alt_id == ALTIMETER_STRATOLOGGER) {
-                alt_2_arm_state = desired_arm_state;
+                alt_stratologger_arm_state = desired_arm_state;
             }
             break;
 
