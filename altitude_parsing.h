@@ -1,12 +1,8 @@
 #ifndef ALTITUDE_PARSING_H
-#define	ALTITUDE_PARSING_H
+#define ALTITUDE_PARSING_H
 
-#include <stdlib.h>
+#include <stdbool.h>
 #include <stdint.h>
-#include <string.h>
-#include "canlib/util/safe_ring_buffer.h"
-#include "canlib/pic18f26k83/pic18f26k83_timer.h"
-#include <xc.h>
 
 #define VELOCITY_ESTIMATION_INTERVAL 100 // in ms
 
@@ -24,5 +20,5 @@ void uart1_handle_interrupt(void);
 
 void parse_altitude(void);
 
-#endif	/* ALTITUDE_PARSING_H */
+#endif /* ALTITUDE_PARSING_H */
 

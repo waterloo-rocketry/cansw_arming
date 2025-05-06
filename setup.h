@@ -1,8 +1,8 @@
 #ifndef ARMING_H
-#define	ARMING_H
+#define ARMING_H
 
 #include <xc.h>
-#include "canlib/pic18f26k83/pic18f26k83_timer.h"
+
 #include "mcc_generated_files/mcc.h"
 
 // Time between main loop code execution
@@ -32,11 +32,11 @@
 #define ANALOG_SCALAR 3.72
 // Current Monitorring
 #define BATT_CURR_SCALAR 2.50 // mA/mV
-#define CAN_CURR_SCALAR  0.05 // mA/mV NOTE this is not correct, it should be 0.05 but the board used for dev had an amp  with a gain of 20 instead of 100
+#define CAN_CURR_SCALAR 0.05 // mA/mV
 
 void output_init(void);
 
 void osc_init(void);
 
-#endif	/* ARMING_H */
+#endif /* ARMING_H */
 
