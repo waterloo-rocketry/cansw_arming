@@ -7,9 +7,11 @@
 *.o
 *.sdb
 *.obj.dmp
+*.map
 html/
 nbproject/private/
 nbproject/Package-*.bash
+nbproject/Makefile-*
 build/
 nbbuild/
 dist/
@@ -17,6 +19,9 @@ nbdist/
 nbactions.xml
 nb-configuration.xml
 funclist
-nbproject/Makefile-*
 disassembly/
-*.map
+.DS_Store
+mcc-manifest-autosave.yml
+mcc-manifest-generated-success.yml
+defmplabxtrace.*
+MPLABXLog.xml*
