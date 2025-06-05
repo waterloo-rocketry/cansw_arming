@@ -197,7 +197,9 @@ int main(int argc, char **argv) {
         parse_altitude();
         if (new_altitude_available()) {
             can_msg_t altitude_msg;
-            build_altitude_data_msg(PRIO_HIGH, millis(), get_altitude(), APOGEE_UNKNOWN, &altitude_msg);
+            build_altitude_data_msg(
+                PRIO_HIGH, millis(), get_altitude(), APOGEE_UNKNOWN, &altitude_msg
+            );
             txb_enqueue(&altitude_msg);
         }
 
