@@ -203,13 +203,6 @@ int main(int argc, char **argv) {
             txb_enqueue(&altitude_msg);
         }
 
-        if (new_velocity_available()) {
-            can_msg_t velocity_msg;
-            build_analog_data_msg(
-                PRIO_HIGH, millis(), SENSOR_VELOCITY, get_velocity(), &velocity_msg
-            );
-            txb_enqueue(&velocity_msg);
-        }
         // set io to arm state of Stratologger
         if (alt_stratologger_arm_state == ALT_ARM_STATE_DISARMED) {
             DISARM_A1();
