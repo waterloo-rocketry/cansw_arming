@@ -269,11 +269,20 @@ static void can_msg_handler(const can_msg_t *msg) {
     switch (msg_type) {
         case MSG_ALT_ARM_CMD:
             get_alt_arm_state(msg, &alt_id, &desired_arm_state);
-            if (alt_id == ALTIMETER_ROCKET_RAVEN) {
-                alt_raven_arm_state = desired_arm_state;
-            }
-            if (alt_id == ALTIMETER_ROCKET_STRATOLOGGER) {
-                alt_stratologger_arm_state = desired_arm_state;
+            if (BOARD_INST_UNIQUE_ID == BOARD_INST_ID_ROCKET) {
+                if (alt_id == ALTIMETER_ROCKET_RAVEN) {
+                    alt_raven_arm_state = desired_arm_state;
+                }
+                if (alt_id == ALTIMETER_ROCKET_STRATOLOGGER) {
+                    alt_stratologger_arm_state = desired_arm_state;
+                }
+            } else if (BOARD_INST_UNIQUE_ID == BOARD_INST_ID_PAYLOAD) {
+                if (alt_id == ALTIMETER_PAYLOAD_RAVEN) {
+                    alt_raven_arm_state = desired_arm_state;
+                }
+                if (alt_id == ALTIMETER_PAYLOAD_STRATOLOGGER) {
+                    alt_stratologger_arm_state = desired_arm_state;
+                }
             }
             break;
 
