@@ -93,7 +93,7 @@ int main(int argc, char **argv) {
             build_alt_arm_status_msg(
                 PRIO_HIGH,
                 millis(),
-                ALTIMETER_STRATOLOGGER,
+                ALTIMETER_ROCKET_STRATOLOGGER,
                 alt_stratologger_arm_state,
                 (uint16_t)(ADCC_GetSingleConversion(channel_A1_DROGUE) * ANALOG_SCALAR),
                 (uint16_t)(ADCC_GetSingleConversion(channel_A1_MAIN) * ANALOG_SCALAR),
@@ -105,7 +105,7 @@ int main(int argc, char **argv) {
             build_alt_arm_status_msg(
                 PRIO_HIGH,
                 millis(),
-                ALTIMETER_RAVEN,
+                ALTIMETER_ROCKET_RAVEN,
                 alt_raven_arm_state,
                 (uint16_t)(ADCC_GetSingleConversion(channel_A2_DROGUE) * ANALOG_SCALAR),
                 (uint16_t)(ADCC_GetSingleConversion(channel_A2_MAIN) * ANALOG_SCALAR),
@@ -197,17 +197,12 @@ int main(int argc, char **argv) {
         parse_altitude();
         if (new_altitude_available()) {
             can_msg_t altitude_msg;
-            build_altitude_data_msg(PRIO_HIGH, millis(), get_altitude(), &altitude_msg);
+            build_altitude_data_msg(
+                PRIO_HIGH, millis(), get_altitude(), APOGEE_UNKNOWN, &altitude_msg
+            );
             txb_enqueue(&altitude_msg);
         }
 
-        if (new_velocity_available()) {
-            can_msg_t velocity_msg;
-            build_analog_data_msg(
-                PRIO_HIGH, millis(), SENSOR_VELOCITY, get_velocity(), &velocity_msg
-            );
-            txb_enqueue(&velocity_msg);
-        }
         // set io to arm state of Stratologger
         if (alt_stratologger_arm_state == ALT_ARM_STATE_DISARMED) {
             DISARM_A1();
@@ -274,11 +269,20 @@ static void can_msg_handler(const can_msg_t *msg) {
     switch (msg_type) {
         case MSG_ALT_ARM_CMD:
             get_alt_arm_state(msg, &alt_id, &desired_arm_state);
-            if (alt_id == ALTIMETER_RAVEN) {
-                alt_raven_arm_state = desired_arm_state;
-            }
-            if (alt_id == ALTIMETER_STRATOLOGGER) {
-                alt_stratologger_arm_state = desired_arm_state;
+            if (BOARD_INST_UNIQUE_ID == BOARD_INST_ID_ROCKET) {
+                if (alt_id == ALTIMETER_ROCKET_RAVEN) {
+                    alt_raven_arm_state = desired_arm_state;
+                }
+                if (alt_id == ALTIMETER_ROCKET_STRATOLOGGER) {
+                    alt_stratologger_arm_state = desired_arm_state;
+                }
+            } else if (BOARD_INST_UNIQUE_ID == BOARD_INST_ID_PAYLOAD) {
+                if (alt_id == ALTIMETER_PAYLOAD_RAVEN) {
+                    alt_raven_arm_state = desired_arm_state;
+                }
+                if (alt_id == ALTIMETER_PAYLOAD_STRATOLOGGER) {
+                    alt_stratologger_arm_state = desired_arm_state;
+                }
             }
             break;
 
