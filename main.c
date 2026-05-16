@@ -5,13 +5,13 @@
 #include "rocketlib/include/timer.h"
 #include "canlib/canlib.h"
 
-
 #include "altitude_parsing.h"
 #include "error_checks.h"
 #include "mcc_generated_files/mcc.h"
 #include "setup.h"
 
 #define _XTAL_FREQ 12000000 // 12MHz
+
 
 static void can_msg_handler(const can_msg_t *msg);
 
@@ -58,6 +58,7 @@ int main(int argc, char **argv) {
 
     uint32_t last_millis = millis();
     uint32_t sensor_last_millis = millis();
+    
 
     /***************Main Loop***************/
     while (1) {
@@ -82,7 +83,7 @@ int main(int argc, char **argv) {
             if (!check_bus_overcurrent_error()) {
                 status_bitfield |= (1 << E_5V_OVER_CURRENT_OFFSET);
             }
-            // TODO: CHECK IF Watch Dog timer window violation has occured
+            // TODO: CHECK IF Watch Dog timer window violation has occurred
             can_msg_t board_stat_msg;
             build_general_board_status_msg(
                 PRIO_MEDIUM, millis(), status_bitfield, &board_stat_msg
@@ -102,18 +103,6 @@ int main(int argc, char **argv) {
             );
             txb_enqueue(&alt_stratologger_arm_stat_msg);
 
-            can_msg_t alt_raven_arm_stat_msg;
-            build_alt_arm_status_msg(
-                PRIO_HIGH,
-                millis(),
-                ALTIMETER_RAVEN,
-                alt_raven_arm_state,
-                (uint16_t)(ADCC_GetSingleConversion(channel_A2_DROGUE) * ANALOG_SCALAR),
-                (uint16_t)(ADCC_GetSingleConversion(channel_A2_MAIN) * ANALOG_SCALAR),
-                &alt_raven_arm_stat_msg
-            );
-            txb_enqueue(&alt_raven_arm_stat_msg);
-
             // Battery Status Messages
             can_msg_t bat_1_v_msg;
             build_analog_sensor_16bit_msg(
@@ -124,16 +113,6 @@ int main(int argc, char **argv) {
                 &bat_1_v_msg
             );
             txb_enqueue(&bat_1_v_msg);
-
-            can_msg_t bat_2_v_msg;
-            build_analog_sensor_16bit_msg(
-                PRIO_MEDIUM,
-                millis(),
-                SENSOR_RA_BATT_VOLT_2,
-                (uint16_t)(ADCC_GetSingleConversion(channel_BATTERY_2) * ANALOG_SCALAR),
-                &bat_2_v_msg
-            );
-            txb_enqueue(&bat_2_v_msg);
 
             // Mag Switch Voltage Messages
             can_msg_t mag_1_v_msg;
@@ -146,16 +125,6 @@ int main(int argc, char **argv) {
             );
             txb_enqueue(&mag_1_v_msg);
 
-            can_msg_t mag_2_v_msg;
-            build_analog_sensor_16bit_msg(
-                PRIO_MEDIUM,
-                millis(),
-                SENSOR_RA_MAG_VOLT_2,
-                (uint16_t)(ADCC_GetSingleConversion(channel_MAG_2) * ANALOG_SCALAR),
-                &mag_2_v_msg
-            );
-            txb_enqueue(&mag_2_v_msg);
-
             // Current Messages
             can_msg_t batt1_curr_msg;
             build_analog_sensor_16bit_msg(
@@ -166,16 +135,6 @@ int main(int argc, char **argv) {
                 &batt1_curr_msg
             );
             txb_enqueue(&batt1_curr_msg);
-
-            can_msg_t batt2_curr_msg;
-            build_analog_sensor_16bit_msg(
-                PRIO_MEDIUM,
-                millis(),
-                SENSOR_RA_BATT_CURR_2,
-                get_batt2_curr_low_low_pass(),
-                &batt2_curr_msg
-            );
-            txb_enqueue(&batt2_curr_msg);
 
             can_msg_t bus_curr_msg;
             build_analog_sensor_16bit_msg(
