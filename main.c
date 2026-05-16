@@ -251,13 +251,14 @@ static void can_msg_handler(const can_msg_t *msg) {
             WHITE_LED_OFF();
             break;
 
-        case MSG_RESET_CMD:
+        case MSG_RESET_CMD: {
             bool needsareset = true;
             check_board_need_reset(msg,&needsareset);
             if (needsareset) {
                 RESET();
             }
             break;
+        }
 
         default:
             // this is where we go for all the messages we don't care about
