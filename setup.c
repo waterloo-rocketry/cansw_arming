@@ -15,15 +15,12 @@ void output_init(void) {
     LATC7 = 1; // turn the red LED off
 
     // Indicator Buzzer
-    TRISB4 = 0; // set B4 as an output for the indicator buzzer
-    LATB4 = 0; // turn off the buzzer
+    TRISB2 = 0; // set B4 as an output for the indicator buzzer
+    LATB2 = 0; // turn off the buzzer
 
     // Altimeter Arming
-    TRISC3 = 0; // set C3 as an output for arming A1
-    LATC3 = 1; // arm altimeter 1
-
-    TRISC2 = 0; // set C2 as an output for arming A2
-    LATC2 = 1; // arm altimeter 2
+    TRISB3 = 0; // set C3 as an output for arming A1
+    LATB3 = 1; // arm altimeter
 }
 
 void osc_init(void) {

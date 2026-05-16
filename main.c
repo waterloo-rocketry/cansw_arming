@@ -2,8 +2,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "rocketlib/include/timer.h"
 #include "canlib/canlib.h"
-#include "timer.h"
+
 
 #include "altitude_parsing.h"
 #include "error_checks.h"
@@ -33,7 +34,7 @@ int main(int argc, char **argv) {
     ADCC_Initialize();
     FVR_Initialize();
 
-    // enable global interupts
+    // enable global interrupts
     INTCON0bits.GIE = 1;
 
     /***********set up CAN**********/
@@ -76,12 +77,12 @@ int main(int argc, char **argv) {
             uint32_t status_bitfield = 0;
             if (!check_battery_voltage_error()) {
                 status_bitfield |= (1 << E_12V_OVER_VOLTAGE_OFFSET);
-                // FIXME: replace with a more approiate message
+                // FIXME: replace with a more appropriate message
             }
             if (!check_bus_overcurrent_error()) {
                 status_bitfield |= (1 << E_5V_OVER_CURRENT_OFFSET);
             }
-            // TODO: CHECK IF Watch Dog timer window violation has ocured
+            // TODO: CHECK IF Watch Dog timer window violation has occured
             can_msg_t board_stat_msg;
             build_general_board_status_msg(
                 PRIO_MEDIUM, millis(), status_bitfield, 0, &board_stat_msg
@@ -214,10 +215,10 @@ int main(int argc, char **argv) {
 
         // set io to arm state of Raven
         if (alt_raven_arm_state == ALT_ARM_STATE_DISARMED) {
-            DISARM_A2();
+            DISARM_A1();
             BLUE_LED_OFF();
         } else {
-            ARM_A2();
+            ARM_A1();
             BLUE_LED_ON();
         }
 
