@@ -4,7 +4,6 @@
     <logicalFolder name="canlib" displayName="canlib" projectFiles="true">
       <logicalFolder name="pic18f26k83" displayName="pic18f26k83" projectFiles="true">
         <itemPath>canlib/pic18f26k83/pic18f26k83_can.h</itemPath>
-        <itemPath>canlib/pic18f26k83/pic18f26k83_timer.h</itemPath>
       </logicalFolder>
       <logicalFolder name="util" displayName="util" projectFiles="true">
         <itemPath>canlib/util/can_rcv_buffer.c</itemPath>
@@ -55,10 +54,11 @@
           <logicalFolder name="dspic33epxxxgp50x"
                          displayName="dspic33epxxxgp50x"
                          projectFiles="true">
-            <itemPath>canlib/dspic33epxxxgp50x/dspic33epxxxgp50x_can.c</itemPath>
           </logicalFolder>
           <logicalFolder name="mcp2515" displayName="mcp2515" projectFiles="true">
-            <itemPath>canlib/mcp2515/mcp_2515.c</itemPath>
+            <itemPath>canlib/mcp2515/mcp2515.c</itemPath>
+            <itemPath>canlib/mcp2515/mcp2515.h</itemPath>
+            <itemPath>canlib/mcp2515/mcp2515_regs.h</itemPath>
           </logicalFolder>
           <logicalFolder name="message" displayName="message" projectFiles="true">
           </logicalFolder>
@@ -104,8 +104,6 @@
           <logicalFolder name="scripts" displayName="scripts" projectFiles="true">
           </logicalFolder>
           <logicalFolder name="unit_tests" displayName="unit_tests" projectFiles="true">
-            <itemPath>rocketlib/unit_tests/low_pass_filter_test.c</itemPath>
-            <itemPath>rocketlib/unit_tests/unit_test.c</itemPath>
           </logicalFolder>
         </logicalFolder>
         <logicalFolder name="test code" displayName="test code" projectFiles="true">
@@ -131,17 +129,16 @@
         <itemPath>rocketlib/include/common.h</itemPath>
         <itemPath>rocketlib/include/crc8.h</itemPath>
         <itemPath>rocketlib/include/electrical.h</itemPath>
-        <itemPath>rocketlib/include/i2c.h</itemPath>
         <itemPath>rocketlib/include/low_pass_filter.h</itemPath>
-        <itemPath>rocketlib/include/pwm.h</itemPath>
         <itemPath>rocketlib/include/timer.h</itemPath>
+        <itemPath>canlib/rocketlib/include/pic18f26k83/i2c.h</itemPath>
+        <itemPath>canlib/rocketlib/include/pic18f26k83/pwm.h</itemPath>
       </logicalFolder>
       <logicalFolder name="pic18f26k83" displayName="pic18f26k83" projectFiles="true">
       </logicalFolder>
       <logicalFolder name="scripts" displayName="scripts" projectFiles="true">
       </logicalFolder>
       <logicalFolder name="unit_tests" displayName="unit_tests" projectFiles="true">
-        <itemPath>rocketlib/unit_tests/low_pass_filter_test.h</itemPath>
       </logicalFolder>
     </logicalFolder>
     <logicalFolder name="SourceFiles"
@@ -153,12 +150,10 @@
         <itemPath>canlib/util/timing_util.c</itemPath>
         <itemPath>canlib/util/can_tx_buffer.c</itemPath>
         <itemPath>canlib/message/msg_actuator.c</itemPath>
-        <itemPath>canlib/message/msg_common.c</itemPath>
         <itemPath>canlib/message/msg_general.c</itemPath>
         <itemPath>canlib/message/msg_gps.c</itemPath>
         <itemPath>canlib/message/msg_recovery.c</itemPath>
         <itemPath>canlib/message/msg_sensor.c</itemPath>
-        <itemPath>canlib/message/msg_state_est.c</itemPath>
       </logicalFolder>
       <logicalFolder name="MCC Generated Files"
                      displayName="MCC Generated Files"
@@ -1339,6 +1334,14 @@
         <property key="wpo-lto" value="false"/>
       </XC8-config-global>
       <item path="canlib/stm32h7/stm32h7_can.c" ex="true" overriding="false">
+        <HI-TECH-COMP>
+        </HI-TECH-COMP>
+        <HI-TECH-LINK>
+        </HI-TECH-LINK>
+        <XC8-CO>
+        </XC8-CO>
+        <XC8-config-global>
+        </XC8-config-global>
       </item>
       <snap>
         <property key="AutoSelectMemRanges" value="auto"/>

@@ -52,9 +52,9 @@ int main(int argc, char **argv) {
     can_timing_t can_setup;
     can_generate_timing_params(_XTAL_FREQ, &can_setup);
 
-    can_init(&can_setup, can_msg_handler);
+    pic18f26k83_can_init(&can_setup, can_msg_handler);
     // set up CAN tx buffer
-    txb_init(tx_pool, sizeof(tx_pool), can_send, can_send_rdy);
+    txb_init(tx_pool, sizeof(tx_pool), pic18f26k83_can_send, pic18f26k83_can_send_rdy);
 
     uint32_t last_millis = millis();
     uint32_t sensor_last_millis = millis();
@@ -85,7 +85,7 @@ int main(int argc, char **argv) {
             // TODO: CHECK IF Watch Dog timer window violation has occured
             can_msg_t board_stat_msg;
             build_general_board_status_msg(
-                PRIO_MEDIUM, millis(), status_bitfield, 0, &board_stat_msg
+                PRIO_MEDIUM, millis(), status_bitfield, &board_stat_msg
             );
             txb_enqueue(&board_stat_msg);
 
@@ -94,7 +94,7 @@ int main(int argc, char **argv) {
             build_alt_arm_status_msg(
                 PRIO_HIGH,
                 millis(),
-                ALTIMETER_ROCKET_STRATOLOGGER,
+                ALTIMETER_STRATOLOGGER,
                 alt_stratologger_arm_state,
                 (uint16_t)(ADCC_GetSingleConversion(channel_A1_DROGUE) * ANALOG_SCALAR),
                 (uint16_t)(ADCC_GetSingleConversion(channel_A1_MAIN) * ANALOG_SCALAR),
@@ -106,7 +106,7 @@ int main(int argc, char **argv) {
             build_alt_arm_status_msg(
                 PRIO_HIGH,
                 millis(),
-                ALTIMETER_ROCKET_RAVEN,
+                ALTIMETER_RAVEN,
                 alt_raven_arm_state,
                 (uint16_t)(ADCC_GetSingleConversion(channel_A2_DROGUE) * ANALOG_SCALAR),
                 (uint16_t)(ADCC_GetSingleConversion(channel_A2_MAIN) * ANALOG_SCALAR),
@@ -116,7 +116,7 @@ int main(int argc, char **argv) {
 
             // Battery Status Messages
             can_msg_t bat_1_v_msg;
-            build_analog_data_msg(
+            build_analog_sensor_16bit_msg(
                 PRIO_MEDIUM,
                 millis(),
                 SENSOR_RA_BATT_VOLT_1,
@@ -126,7 +126,7 @@ int main(int argc, char **argv) {
             txb_enqueue(&bat_1_v_msg);
 
             can_msg_t bat_2_v_msg;
-            build_analog_data_msg(
+            build_analog_sensor_16bit_msg(
                 PRIO_MEDIUM,
                 millis(),
                 SENSOR_RA_BATT_VOLT_2,
@@ -137,7 +137,7 @@ int main(int argc, char **argv) {
 
             // Mag Switch Voltage Messages
             can_msg_t mag_1_v_msg;
-            build_analog_data_msg(
+            build_analog_sensor_16bit_msg(
                 PRIO_MEDIUM,
                 millis(),
                 SENSOR_RA_MAG_VOLT_1,
@@ -147,7 +147,7 @@ int main(int argc, char **argv) {
             txb_enqueue(&mag_1_v_msg);
 
             can_msg_t mag_2_v_msg;
-            build_analog_data_msg(
+            build_analog_sensor_16bit_msg(
                 PRIO_MEDIUM,
                 millis(),
                 SENSOR_RA_MAG_VOLT_2,
@@ -158,7 +158,7 @@ int main(int argc, char **argv) {
 
             // Current Messages
             can_msg_t batt1_curr_msg;
-            build_analog_data_msg(
+            build_analog_sensor_16bit_msg(
                 PRIO_MEDIUM,
                 millis(),
                 SENSOR_RA_BATT_CURR_1,
@@ -168,7 +168,7 @@ int main(int argc, char **argv) {
             txb_enqueue(&batt1_curr_msg);
 
             can_msg_t batt2_curr_msg;
-            build_analog_data_msg(
+            build_analog_sensor_16bit_msg(
                 PRIO_MEDIUM,
                 millis(),
                 SENSOR_RA_BATT_CURR_2,
@@ -178,7 +178,7 @@ int main(int argc, char **argv) {
             txb_enqueue(&batt2_curr_msg);
 
             can_msg_t bus_curr_msg;
-            build_analog_data_msg(
+            build_analog_sensor_16bit_msg(
                 PRIO_MEDIUM,
                 millis(),
                 SENSOR_5V_CURR,
@@ -198,9 +198,9 @@ int main(int argc, char **argv) {
         parse_altitude();
         if (new_altitude_available()) {
             can_msg_t altitude_msg;
-            build_altitude_data_msg(
-                PRIO_HIGH, millis(), get_altitude(), APOGEE_UNKNOWN, &altitude_msg
-            );
+            build_analog_sensor_16bit_msg(
+                PRIO_HIGH, millis(), SENSOR_PAYLOAD_INFRARED, get_altitude(), &altitude_msg
+            ); //TODO: Replace SENSOR_PAYLOAD_INFRARED with actual altimeter sensor
             txb_enqueue(&altitude_msg);
         }
 
@@ -239,7 +239,7 @@ static void __interrupt() interrupt_handler() {
         PIR3bits.TMR0IF = 0;
     }
     if (PIR5) {
-        can_handle_interrupt();
+        pic18f26k83_can_handle_interrupt();
     }
     if (U1ERRIRbits.FERIF == 1) { // If we have a framing error, discard the byte
         char garbage = U1RXB; // read the next byte in the buffer to clear the garbage
@@ -271,17 +271,10 @@ static void can_msg_handler(const can_msg_t *msg) {
         case MSG_ALT_ARM_CMD:
             get_alt_arm_state(msg, &alt_id, &desired_arm_state);
             if (BOARD_INST_UNIQUE_ID == BOARD_INST_ID_ROCKET) {
-                if (alt_id == ALTIMETER_ROCKET_RAVEN) {
+                if (alt_id == ALTIMETER_RAVEN) {
                     alt_raven_arm_state = desired_arm_state;
                 }
-                if (alt_id == ALTIMETER_ROCKET_STRATOLOGGER) {
-                    alt_stratologger_arm_state = desired_arm_state;
-                }
-            } else if (BOARD_INST_UNIQUE_ID == BOARD_INST_ID_PAYLOAD) {
-                if (alt_id == ALTIMETER_PAYLOAD_RAVEN) {
-                    alt_raven_arm_state = desired_arm_state;
-                }
-                if (alt_id == ALTIMETER_PAYLOAD_STRATOLOGGER) {
+                if (alt_id == ALTIMETER_STRATOLOGGER) {
                     alt_stratologger_arm_state = desired_arm_state;
                 }
             }
@@ -300,7 +293,9 @@ static void can_msg_handler(const can_msg_t *msg) {
             break;
 
         case MSG_RESET_CMD:
-            if (check_board_need_reset(msg)) {
+            bool needsareset = true;
+            check_board_need_reset(msg,&needsareset);
+            if (needsareset) {
                 RESET();
             }
             break;
