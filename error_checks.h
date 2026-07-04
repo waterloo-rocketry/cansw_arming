@@ -9,9 +9,11 @@
 #define OVERVOLTAGE_THRESHOLD 10000 // in mV
 #define BUS_OVERCURRENT_THRESHOLD 50 // in mA
 
-bool check_battery_voltage_error(void);
+bool check_battery_voltage_overvoltage(void);
 
-bool check_bus_overcurrent_error(void);
+bool check_battery_voltage_undervoltage(void);
+
+bool check_bus_overcurrent_healthy(void);
 
 void indicator_buzzer_heartbeat(void);
 

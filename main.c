@@ -82,11 +82,15 @@ int main(int argc, char **argv) {
 
             // General Status Messages
             uint32_t status_bitfield = 0;
-            if (!check_battery_voltage_error()) {
-                status_bitfield |= (1 << E_12V_OVER_VOLTAGE_OFFSET);
+            if (check_battery_voltage_overvoltage()) {
+                status_bitfield |= (1 << E_BATT_OVER_VOLTAGE_OFFSET);
                 // FIXME: replace with a more appropriate message
             }
-            if (!check_bus_overcurrent_error()) {
+            if (check_battery_voltage_undervoltage()) {
+                status_bitfield |= (1 << E_BATT_UNDER_VOLTAGE_OFFSET);
+                // FIXME: replace with a more appropriate message
+            }
+            if (!check_bus_overcurrent_healthy()) {
                 status_bitfield |= (1 << E_5V_OVER_CURRENT_OFFSET);
             }
             // TODO: CHECK IF Watch Dog timer window violation has occurred
@@ -240,7 +244,7 @@ int main(int argc, char **argv) {
             if (new_altitude_available()) {
                 can_msg_t altitude_msg;
                 build_analog_sensor_16bit_msg(
-                    PRIO_HIGH, millis(), SENSOR_PAYLOAD_INFRARED, get_altitude(), &altitude_msg
+                    PRIO_HIGH, millis(), SENSOR_ALTITUDE, get_altitude(), &altitude_msg
                 ); //TODO: Replace SENSOR_PAYLOAD_INFRARED with actual altimeter sensor
                 txb_enqueue(&altitude_msg);
             }

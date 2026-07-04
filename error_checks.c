@@ -3,39 +3,38 @@
 
 #include "timer.h"
 
-bool check_battery_voltage_error(void) {
+bool check_battery_voltage_overvoltage(void) {
     uint16_t batt1_voltage = (uint16_t)ADCC_GetSingleConversion(channel_BATTERY_1) * ANALOG_SCALAR;
-    uint16_t batt2_voltage = (uint16_t)ADCC_GetSingleConversion(channel_BATTERY_2) * ANALOG_SCALAR;
-    bool nominal = true; // keep track of if there was an error
+    // uint16_t batt2_voltage = (uint16_t)ADCC_GetSingleConversion(channel_BATTERY_2) * ANALOG_SCALAR;
+    bool over_voltage = false; // keep track of if there was an error
 
-    if (batt1_voltage > OVERVOLTAGE_THRESHOLD || batt2_voltage > OVERVOLTAGE_THRESHOLD) {
+    if (batt1_voltage > OVERVOLTAGE_THRESHOLD) {
         uint8_t batt_data[2] = {0};
-        uint16_t batt_voltage =
-            batt1_voltage > batt2_voltage
-                ? batt1_voltage
-                : batt2_voltage; // since we have 2 batteries, send the voltage for the highest one
-        batt_data[0] = (batt_voltage >> 8) & 0xff;
-        batt_data[1] = (batt_voltage >> 0) & 0xff;
+        batt_data[0] = (batt1_voltage >> 8) & 0xff;
+        batt_data[1] = (batt1_voltage >> 0) & 0xff;
 
-        nominal = false;
+        over_voltage = true;
     }
 
-    if (batt1_voltage < UNDERVOLTAGE_THRESHOLD || batt2_voltage < UNDERVOLTAGE_THRESHOLD) {
-        uint8_t batt_data[2] = {0};
-        uint16_t batt_voltage =
-            batt1_voltage < batt2_voltage
-                ? batt1_voltage
-                : batt2_voltage; // since we have 2 batteries, send the voltage for the lowest one
-        batt_data[0] = (batt_voltage >> 8) & 0xff;
-        batt_data[1] = (batt_voltage >> 0) & 0xff;
-
-        nominal = false;
-    }
-
-    return nominal;
+    return over_voltage;
 }
 
-bool check_bus_overcurrent_error(void) {
+bool check_battery_voltage_undervoltage(void) {
+    uint16_t batt1_voltage = (uint16_t)ADCC_GetSingleConversion(channel_BATTERY_1) * ANALOG_SCALAR;
+    bool under_voltage = false; // keep track of if there was an error
+
+    if (batt1_voltage < UNDERVOLTAGE_THRESHOLD) {
+        uint8_t batt_data[2] = {0};
+        batt_data[0] = (batt1_voltage >> 8) & 0xff;
+        batt_data[1] = (batt1_voltage >> 0) & 0xff;
+
+        under_voltage = true;
+    }
+
+    return under_voltage;
+}
+
+bool check_bus_overcurrent_healthy(void) {
     uint16_t bus_curr = (uint16_t)(ADCC_GetSingleConversion(channel_CAN_CURR) * CAN_CURR_SCALAR);
     if (bus_curr > BUS_OVERCURRENT_THRESHOLD) {
         uint8_t curr_data[2] = {0};
@@ -91,8 +90,9 @@ bool battery1_active(void) {
 }
 
 bool battery2_active(void) {
-    return (uint16_t)ADCC_GetSingleConversion(channel_BATTERY_2) * ANALOG_SCALAR >
-           MIN_BATTERY_THRESHOLD;
+    // return (uint16_t)ADCC_GetSingleConversion(channel_BATTERY_2) * ANALOG_SCALAR >
+    //        MIN_BATTERY_THRESHOLD;
+    return false;
 }
 
 bool mag1_active(void) {
@@ -101,8 +101,9 @@ bool mag1_active(void) {
 }
 
 bool mag2_active(void) {
-    return (uint16_t)ADCC_GetSingleConversion(channel_MAG_2) * ANALOG_SCALAR >
-           MIN_BATTERY_THRESHOLD;
+    // return (uint16_t)ADCC_GetSingleConversion(channel_MAG_2) * ANALOG_SCALAR >
+    //        MIN_BATTERY_THRESHOLD;
+    return false;
 }
 
 // zach derived the equation alpha = (Fs*T/5)/ 1 + (Fs*T/5)
@@ -122,15 +123,11 @@ double low_low_pass_curr2 = 0;
 
 void update_batt_curr_low_pass(void) {
     double new_curr1_reading = ADCC_GetSingleConversion(channel_BATT1_CURR) * BATT_CURR_SCALAR;
-    double new_curr2_reading = ADCC_GetSingleConversion(channel_BATT2_CURR) * BATT_CURR_SCALAR;
 
     low_pass_curr1 = alpha_low * low_pass_curr1 + (1.0 - alpha_low) * new_curr1_reading;
-    low_pass_curr2 = alpha_low * low_pass_curr2 + (1.0 - alpha_low) * new_curr2_reading;
 
     low_low_pass_curr1 =
         alpha_low_low * low_low_pass_curr1 + (1.0 - alpha_low_low) * new_curr1_reading;
-    low_low_pass_curr2 =
-        alpha_low_low * low_low_pass_curr2 + (1.0 - alpha_low_low) * new_curr2_reading;
 }
 
 double get_batt1_curr_low_pass(void) {
@@ -138,7 +135,7 @@ double get_batt1_curr_low_pass(void) {
 }
 
 double get_batt2_curr_low_pass(void) {
-    return low_pass_curr2;
+    return 0;
 }
 
 double get_batt1_curr_low_low_pass(void) {
@@ -146,5 +143,5 @@ double get_batt1_curr_low_low_pass(void) {
 }
 
 double get_batt2_curr_low_low_pass(void) {
-    return low_low_pass_curr2;
+    return 0;
 }
