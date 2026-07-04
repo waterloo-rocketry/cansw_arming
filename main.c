@@ -25,6 +25,10 @@ static can_alt_arm_state_t alt_raven_arm_state = ALT_ARM_STATE_ARMED;
 uint8_t tx_pool[500];
 
 int main(int argc, char **argv) {
+    //Altimeter ID
+    can_altimeter_id_t alt_id = 0; // Set to 0 for Raven, 1 for Stratologger
+    //Must also change on line XXX in the can_msg_handler
+    
     // init functions
     osc_init();
     timer0_init();
@@ -59,6 +63,7 @@ int main(int argc, char **argv) {
     uint32_t last_millis = millis();
     uint32_t sensor_last_millis = millis();
     
+    
 
     /***************Main Loop***************/
     while (1) {
@@ -71,6 +76,7 @@ int main(int argc, char **argv) {
 
             // Toggle the white LED
             LATC5 = ~PORTCbits.RC5;
+            
 
             /***********Status Messages***********/
 
@@ -91,101 +97,178 @@ int main(int argc, char **argv) {
             txb_enqueue(&board_stat_msg);
 
             // Altimeter Status Messages
-            can_msg_t alt_stratologger_arm_stat_msg;
-            build_alt_arm_status_msg(
-                PRIO_HIGH,
-                millis(),
-                ALTIMETER_STRATOLOGGER,
-                alt_stratologger_arm_state,
-                (uint16_t)(ADCC_GetSingleConversion(channel_A1_DROGUE) * ANALOG_SCALAR),
-                (uint16_t)(ADCC_GetSingleConversion(channel_A1_MAIN) * ANALOG_SCALAR),
-                &alt_stratologger_arm_stat_msg
-            );
-            txb_enqueue(&alt_stratologger_arm_stat_msg);
+            if (BOARD_INST_UNIQUE_ID == BOARD_INST_ID_ARMING_RA_STRATOLOGGER){
+                can_msg_t alt_stratologger_arm_stat_msg;
+                build_alt_arm_status_msg(
+                    PRIO_HIGH,
+                    millis(),
+                    ALTIMETER_STRATOLOGGER,
+                    alt_stratologger_arm_state,
+                    (uint16_t)(ADCC_GetSingleConversion(channel_A1_DROGUE) * ANALOG_SCALAR),
+                    (uint16_t)(ADCC_GetSingleConversion(channel_A1_MAIN) * ANALOG_SCALAR),
+                    &alt_stratologger_arm_stat_msg
+                );
+                txb_enqueue(&alt_stratologger_arm_stat_msg);
+            }
+            
+            if (BOARD_INST_UNIQUE_ID == BOARD_INST_ID_ARMING_RA_RAVEN){
+                // Altimeter Arm Status Message
+                can_msg_t alt_raven_arm_stat_msg;
+                build_alt_arm_status_msg(
+                    PRIO_HIGH,
+                    millis(),
+                    ALTIMETER_RAVEN,
+                    alt_raven_arm_state,
+                    (uint16_t)(ADCC_GetSingleConversion(channel_A1_DROGUE) * ANALOG_SCALAR),
+                    (uint16_t)(ADCC_GetSingleConversion(channel_A1_MAIN) * ANALOG_SCALAR),
+                    &alt_raven_arm_stat_msg
+                );
+                txb_enqueue(&alt_raven_arm_stat_msg);
 
-            // Battery Status Messages
-            can_msg_t bat_1_v_msg;
-            build_analog_sensor_16bit_msg(
-                PRIO_MEDIUM,
-                millis(),
-                SENSOR_RA_BATT_VOLT_1,
-                (uint16_t)(ADCC_GetSingleConversion(channel_BATTERY_1) * ANALOG_SCALAR),
-                &bat_1_v_msg
-            );
-            txb_enqueue(&bat_1_v_msg);
+                // Battery Status Messages
+                can_msg_t bat_1_v_msg;
+                build_analog_sensor_16bit_msg(
+                    PRIO_MEDIUM,
+                    millis(),
+                    SENSOR_RA_BATT_VOLT_1,
+                    (uint16_t)(ADCC_GetSingleConversion(channel_BATTERY_1) * ANALOG_SCALAR),
+                    &bat_1_v_msg
+                );
+                txb_enqueue(&bat_1_v_msg);
 
-            // Mag Switch Voltage Messages
-            can_msg_t mag_1_v_msg;
-            build_analog_sensor_16bit_msg(
-                PRIO_MEDIUM,
-                millis(),
-                SENSOR_RA_MAG_VOLT_1,
-                (uint16_t)(ADCC_GetSingleConversion(channel_MAG_1) * ANALOG_SCALAR),
-                &mag_1_v_msg
-            );
-            txb_enqueue(&mag_1_v_msg);
+                // Mag Switch Voltage Messages
+                can_msg_t mag_1_v_msg;
+                build_analog_sensor_16bit_msg(
+                    PRIO_MEDIUM,
+                    millis(),
+                    SENSOR_RA_MAG_VOLT_1,
+                    (uint16_t)(ADCC_GetSingleConversion(channel_MAG_1) * ANALOG_SCALAR),
+                    &mag_1_v_msg
+                );
+                txb_enqueue(&mag_1_v_msg);
 
-            // Current Messages
-            can_msg_t batt1_curr_msg;
-            build_analog_sensor_16bit_msg(
-                PRIO_MEDIUM,
-                millis(),
-                SENSOR_RA_BATT_CURR_1,
-                get_batt1_curr_low_low_pass(),
-                &batt1_curr_msg
-            );
-            txb_enqueue(&batt1_curr_msg);
+                // Current Messages
+                can_msg_t batt1_curr_msg;
+                build_analog_sensor_16bit_msg(
+                    PRIO_MEDIUM,
+                    millis(),
+                    SENSOR_RA_BATT_CURR_1,
+                    get_batt1_curr_low_low_pass(),
+                    &batt1_curr_msg
+                );
+                txb_enqueue(&batt1_curr_msg);
 
-            can_msg_t bus_curr_msg;
-            build_analog_sensor_16bit_msg(
-                PRIO_MEDIUM,
-                millis(),
-                SENSOR_5V_CURR,
-                (uint16_t)(ADCC_GetSingleConversion(channel_CAN_CURR) * CAN_CURR_SCALAR),
-                &bus_curr_msg
-            );
-            txb_enqueue(&bus_curr_msg);
+                // 5V Line
+                can_msg_t bus_curr_msg;
+                build_analog_sensor_16bit_msg(
+                    PRIO_MEDIUM,
+                    millis(),
+                    SENSOR_5V_CURR,
+                    (uint16_t)(ADCC_GetSingleConversion(channel_CAN_CURR) * CAN_CURR_SCALAR),
+                    &bus_curr_msg
+                );
+                txb_enqueue(&bus_curr_msg);
+            }
+            
+            if (BOARD_INST_UNIQUE_ID == BOARD_INST_ID_ARMING_RA_STRATOLOGGER){
+                // Altimeter Arm Status Message
+                can_msg_t alt_stratologger_arm_stat_msg;
+                build_alt_arm_status_msg(
+                    PRIO_HIGH,
+                    millis(),
+                    ALTIMETER_STRATOLOGGER,
+                    alt_stratologger_arm_state,
+                    (uint16_t)(ADCC_GetSingleConversion(channel_A1_DROGUE) * ANALOG_SCALAR),
+                    (uint16_t)(ADCC_GetSingleConversion(channel_A1_MAIN) * ANALOG_SCALAR),
+                    &alt_stratologger_arm_stat_msg
+                );
+                txb_enqueue(&alt_stratologger_arm_stat_msg);
+
+                // Battery Status Messages
+                can_msg_t bat_2_v_msg;
+                build_analog_sensor_16bit_msg(
+                    PRIO_MEDIUM,
+                    millis(),
+                    SENSOR_RA_BATT_VOLT_2,
+                    (uint16_t)(ADCC_GetSingleConversion(channel_BATTERY_1) * ANALOG_SCALAR),
+                    &bat_2_v_msg
+                );
+                txb_enqueue(&bat_2_v_msg);
+
+                // Mag Switch Voltage Messages
+                can_msg_t mag_2_v_msg;
+                build_analog_sensor_16bit_msg(
+                    PRIO_MEDIUM,
+                    millis(),
+                    SENSOR_RA_MAG_VOLT_2,
+                    (uint16_t)(ADCC_GetSingleConversion(channel_MAG_1) * ANALOG_SCALAR),
+                    &mag_2_v_msg
+                );
+                txb_enqueue(&mag_2_v_msg);
+
+                // Current Messages
+                can_msg_t batt2_curr_msg;
+                build_analog_sensor_16bit_msg(
+                    PRIO_MEDIUM,
+                    millis(),
+                    SENSOR_RA_BATT_CURR_2,
+                    get_batt1_curr_low_low_pass(),
+                    &batt2_curr_msg
+                );
+                txb_enqueue(&batt2_curr_msg);
+
+                // 5V line current
+                can_msg_t bus_curr_msg;
+                build_analog_sensor_16bit_msg(
+                    PRIO_MEDIUM,
+                    millis(),
+                    SENSOR_5V_CURR,
+                    (uint16_t)(ADCC_GetSingleConversion(channel_CAN_CURR) * CAN_CURR_SCALAR),
+                    &bus_curr_msg
+                );
+                txb_enqueue(&bus_curr_msg);
+            }
+
+            // high speed sensor checking
+            if (millis() >= sensor_last_millis + MAX_SENSOR_LOOP_TIME_DIFF_ms) {
+                sensor_last_millis = millis();
+                update_batt_curr_low_pass();
+            }
+
+            // handle altitude data, send message if new altitude received
+            parse_altitude();
+            if (new_altitude_available()) {
+                can_msg_t altitude_msg;
+                build_analog_sensor_16bit_msg(
+                    PRIO_HIGH, millis(), SENSOR_PAYLOAD_INFRARED, get_altitude(), &altitude_msg
+                ); //TODO: Replace SENSOR_PAYLOAD_INFRARED with actual altimeter sensor
+                txb_enqueue(&altitude_msg);
+            }
+
+            // set io to arm state of Stratologger
+            if (alt_stratologger_arm_state == ALT_ARM_STATE_DISARMED) {
+                DISARM_A1();
+                RED_LED_OFF();
+            } else {
+                ARM_A1();
+                RED_LED_ON();
+            }
+
+            // set io to arm state of Raven
+            if (alt_raven_arm_state == ALT_ARM_STATE_DISARMED) {
+                DISARM_A1();
+                BLUE_LED_OFF();
+            } else {
+                ARM_A1();
+                BLUE_LED_ON();
+            }
+
+            // send queued messages
+            txb_heartbeat();
+
+            // Mag-switch Arming Alert
+            indicator_buzzer_heartbeat();
         }
-
-        // high speed sensor checking
-        if (millis() >= sensor_last_millis + MAX_SENSOR_LOOP_TIME_DIFF_ms) {
-            sensor_last_millis = millis();
-            update_batt_curr_low_pass();
-        }
-
-        // handle altitude data, send message if new altitude received
-        parse_altitude();
-        if (new_altitude_available()) {
-            can_msg_t altitude_msg;
-            build_analog_sensor_16bit_msg(
-                PRIO_HIGH, millis(), SENSOR_PAYLOAD_INFRARED, get_altitude(), &altitude_msg
-            ); //TODO: Replace SENSOR_PAYLOAD_INFRARED with actual altimeter sensor
-            txb_enqueue(&altitude_msg);
-        }
-
-        // set io to arm state of Stratologger
-        if (alt_stratologger_arm_state == ALT_ARM_STATE_DISARMED) {
-            DISARM_A1();
-            RED_LED_OFF();
-        } else {
-            ARM_A1();
-            RED_LED_ON();
-        }
-
-        // set io to arm state of Raven
-        if (alt_raven_arm_state == ALT_ARM_STATE_DISARMED) {
-            DISARM_A1();
-            BLUE_LED_OFF();
-        } else {
-            ARM_A1();
-            BLUE_LED_ON();
-        }
-
-        // send queued messages
-        txb_heartbeat();
-
-        // Mag-switch Arming Alert
-        indicator_buzzer_heartbeat();
     }
     RESET();
     // unreachable!
