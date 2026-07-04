@@ -16,17 +16,17 @@
 static void can_msg_handler(const can_msg_t *msg);
 
 // Altimeter 1
-static can_alt_arm_state_t alt_stratologger_arm_state = ALT_ARM_STATE_ARMED;
+static can_alt_arm_state_t alt_stratologger_arm_state = ALT_ARM_STATE_DISARMED;
 
 // Altimeter 2
-static can_alt_arm_state_t alt_raven_arm_state = ALT_ARM_STATE_ARMED;
+static can_alt_arm_state_t alt_raven_arm_state = ALT_ARM_STATE_DISARMED;
 
 // Memory pool for CAN transmit buffer
 uint8_t tx_pool[500];
 
 int main(int argc, char **argv) {
     //Altimeter ID
-    can_altimeter_id_t alt_id = 0; // Set to 0 for Raven, 1 for Stratologger
+    // use macro: BOARD_INST_UNIQUE_ID to check
     //Must also change on line XXX in the can_msg_handler
     
     // init functions
@@ -246,21 +246,32 @@ int main(int argc, char **argv) {
             }
 
             // set io to arm state of Stratologger
-            if (alt_stratologger_arm_state == ALT_ARM_STATE_DISARMED) {
-                DISARM_A1();
-                RED_LED_OFF();
-            } else {
-                ARM_A1();
-                RED_LED_ON();
-            }
-
-            // set io to arm state of Raven
-            if (alt_raven_arm_state == ALT_ARM_STATE_DISARMED) {
-                DISARM_A1();
+            if (BOARD_INST_UNIQUE_ID == BOARD_INST_ID_ARMING_RA_STRATOLOGGER) {
+                // turn raven LED off
                 BLUE_LED_OFF();
+
+                if (ALT_ARM_STATE_DISARMED == alt_stratologger_arm_state) {
+                    DISARM_A1();
+                    RED_LED_OFF();
+                } else {
+                    ARM_A1();
+                    RED_LED_ON();
+                }
+            } else if (BOARD_INST_UNIQUE_ID == BOARD_INST_ID_ARMING_RA_RAVEN) {
+                // turn stratologger LED off
+                RED_LED_OFF();
+
+                if (ALT_ARM_STATE_DISARMED == alt_raven_arm_state) {
+                    DISARM_A1();
+                    BLUE_LED_OFF();
+                } else {
+                    ARM_A1();
+                    BLUE_LED_ON();
+                }
+            // if the board is non of the above (undefined) will 
             } else {
-                ARM_A1();
-                BLUE_LED_ON();
+                BLUE_LED_OFF();
+                RED_LED_OFF();
             }
 
             // send queued messages
