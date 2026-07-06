@@ -248,42 +248,43 @@ int main(int argc, char **argv) {
                 ); //TODO: Replace SENSOR_PAYLOAD_INFRARED with actual altimeter sensor
                 txb_enqueue(&altitude_msg);
             }
-
-            // set io to arm state of Stratologger
-            if (BOARD_INST_UNIQUE_ID == BOARD_INST_ID_ARMING_RA_STRATOLOGGER) {
-                // turn raven LED off
-                BLUE_LED_OFF();
-
-                if (ALT_ARM_STATE_DISARMED == alt_stratologger_arm_state) {
-                    DISARM_A1();
-                    RED_LED_OFF();
-                } else {
-                    ARM_A1();
-                    RED_LED_ON();
-                }
-            } else if (BOARD_INST_UNIQUE_ID == BOARD_INST_ID_ARMING_RA_RAVEN) {
-                // turn stratologger LED off
-                RED_LED_OFF();
-
-                if (ALT_ARM_STATE_DISARMED == alt_raven_arm_state) {
-                    DISARM_A1();
-                    BLUE_LED_OFF();
-                } else {
-                    ARM_A1();
-                    BLUE_LED_ON();
-                }
-            // if the board is non of the above (undefined) will 
-            } else {
-                BLUE_LED_OFF();
-                RED_LED_OFF();
-            }
-
-            // send queued messages
-            txb_heartbeat();
-
-            // Mag-switch Arming Alert
-            indicator_buzzer_heartbeat();
         }
+
+
+        // set io to arm state of Stratologger
+        if (BOARD_INST_UNIQUE_ID == BOARD_INST_ID_ARMING_RA_STRATOLOGGER) {
+            // turn raven LED off
+            BLUE_LED_OFF();
+
+            if (ALT_ARM_STATE_DISARMED == alt_stratologger_arm_state) {
+                DISARM_A1();
+                RED_LED_OFF();
+            } else {
+                ARM_A1();
+                RED_LED_ON();
+            }
+        } else if (BOARD_INST_UNIQUE_ID == BOARD_INST_ID_ARMING_RA_RAVEN) {
+            // turn stratologger LED off
+            RED_LED_OFF();
+
+            if (ALT_ARM_STATE_DISARMED == alt_raven_arm_state) {
+                DISARM_A1();
+                BLUE_LED_OFF();
+            } else {
+                ARM_A1();
+                BLUE_LED_ON();
+            }
+        // if the board is non of the above (undefined) will 
+        } else {
+            BLUE_LED_OFF();
+            RED_LED_OFF();
+        }
+
+        // send queued messages
+        txb_heartbeat();
+
+        // Battery-switch Arming Alert
+        indicator_buzzer_heartbeat();
     }
     RESET();
     // unreachable!

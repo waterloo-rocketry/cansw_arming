@@ -91,7 +91,7 @@ typedef enum
 {
     channel_BATTERY_1 = 0x2,
     channel_MAG_1     = 0x1,
-    channel_CAN_CURR  = 0x18,
+    channel_CAN_CURR  = 0x14,
     channel_A1_DROGUE = 0xD,
     channel_A1_MAIN   = 0xC,
     channel_BATT1_CURR = 0x0,

@@ -49,10 +49,10 @@ void uart1_rx_init(uint32_t baud, uint32_t osc_freq) {
     U1BRGL = baud_rate_gen & 0xFF;
 
     U1RXPPS = (0b010 << 3) | // port C
-              (0b100); // pin 4
+              (0b010); // pin 4
 
-    ANSELC4 = 0;
-    TRISC4 = 1; // set C4 as input
+    ANSELC2 = 0;
+    TRISC2 = 1; // set C2 as input
 
     U1CON1bits.ON = 1; // enable UART
 
