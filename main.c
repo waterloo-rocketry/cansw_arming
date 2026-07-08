@@ -16,10 +16,10 @@
 static void can_msg_handler(const can_msg_t *msg);
 
 // Altimeter 1
-static can_alt_arm_state_t alt_stratologger_arm_state = ALT_ARM_STATE_DISARMED;
+static can_alt_arm_state_t alt_stratologger_arm_state = ALT_ARM_STATE_ARMED;
 
 // Altimeter 2
-static can_alt_arm_state_t alt_raven_arm_state = ALT_ARM_STATE_DISARMED;
+static can_alt_arm_state_t alt_raven_arm_state = ALT_ARM_STATE_ARMED;
 
 // Memory pool for CAN transmit buffer
 uint8_t tx_pool[500];
