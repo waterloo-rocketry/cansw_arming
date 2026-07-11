@@ -99,21 +99,6 @@ int main(int argc, char **argv) {
                 PRIO_MEDIUM, millis(), status_bitfield, &board_stat_msg
             );
             txb_enqueue(&board_stat_msg);
-
-            // Altimeter Status Messages
-            if (BOARD_INST_UNIQUE_ID == BOARD_INST_ID_ARMING_RA_STRATOLOGGER){
-                can_msg_t alt_stratologger_arm_stat_msg;
-                build_alt_arm_status_msg(
-                    PRIO_HIGH,
-                    millis(),
-                    ALTIMETER_STRATOLOGGER,
-                    alt_stratologger_arm_state,
-                    (uint16_t)(ADCC_GetSingleConversion(channel_A1_DROGUE) * ANALOG_SCALAR),
-                    (uint16_t)(ADCC_GetSingleConversion(channel_A1_MAIN) * ANALOG_SCALAR),
-                    &alt_stratologger_arm_stat_msg
-                );
-                txb_enqueue(&alt_stratologger_arm_stat_msg);
-            }
             
             if (BOARD_INST_UNIQUE_ID == BOARD_INST_ID_ARMING_RA_RAVEN){
                 // Altimeter Arm Status Message
