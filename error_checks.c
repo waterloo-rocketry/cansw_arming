@@ -46,25 +46,31 @@ bool check_bus_overcurrent_healthy(void) {
     return true;
 }
 
-static uint32_t indicator_buzzer_last_millis = 0;
+static uint32_t loop_start_time = 0;
 static bool buzzer_on = false;
 void indicator_buzzer_heartbeat(void) {
-    int loop_time = millis() - indicator_buzzer_last_millis;
-
-    if (buzzer_on == false && loop_time < 200 && battery1_active()) {
-        BUZZER_ON();
-        buzzer_on = true;
-    } else if ((true == buzzer_on) && (loop_time >= 200) && (loop_time < 1000) && (mag1_active())) {
-        BUZZER_ON();
-        buzzer_on = true;
-    } else if (buzzer_on == true && loop_time >= 200 && loop_time < 2000) {
+    // Each loop lasts BUZZER_HEARTBEAT_LOOP_LENGTH_ms
+    uint32_t time_in_current_loop = millis() - loop_start_time; // in ms
+    
+    uint16_t buzzer_on_duration = mag1_active() ?
+        BUZZER_HEARTBEAT_LOOP_LENGTH_ms / 2 : // when mag1 active, 1000 ms on, 1000 off
+        BUZZER_HEARTBEAT_LOOP_LENGTH_ms / 10; // when mag1 not active, 200 ms on, 1800 off
+    
+    if (battery1_active()) {
+        if (!buzzer_on && time_in_current_loop <= buzzer_on_duration) {
+            BUZZER_ON();
+            buzzer_on = true;
+        } else if (buzzer_on && time_in_current_loop > buzzer_on_duration) {
+            BUZZER_OFF();
+            buzzer_on = false;
+        }
+    } else if (buzzer_on) {
         BUZZER_OFF();
         buzzer_on = false;
-    } else if (loop_time >= 2000) {
-        indicator_buzzer_last_millis = millis();
-    } else {
-        BUZZER_OFF();
-        buzzer_on = false;
+    }
+    
+    if (time_in_current_loop >= BUZZER_HEARTBEAT_LOOP_LENGTH_ms) {
+        loop_start_time = millis();
     }
 }
 

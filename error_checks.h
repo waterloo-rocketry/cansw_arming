@@ -8,6 +8,7 @@
 #define UNDERVOLTAGE_THRESHOLD 5000 // in mV
 #define OVERVOLTAGE_THRESHOLD 10000 // in mV
 #define BUS_OVERCURRENT_THRESHOLD 50 // in mA
+#define BUZZER_HEARTBEAT_LOOP_LENGTH_ms 2000
 
 bool check_battery_voltage_overvoltage(void);
 
