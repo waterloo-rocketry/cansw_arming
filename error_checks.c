@@ -54,8 +54,10 @@ void indicator_buzzer_heartbeat(void) {
     if (buzzer_on == false && loop_time < 200 && battery1_active()) {
         BUZZER_ON();
         buzzer_on = true;
-    }
-    else if (buzzer_on == true && loop_time >= 200 && loop_time < 2000) {
+    } else if ((true == buzzer_on) && (loop_time >= 200) && (loop_time < 1000) && (mag1_active())) {
+        BUZZER_ON();
+        buzzer_on = true;
+    } else if (buzzer_on == true && loop_time >= 200 && loop_time < 2000) {
         BUZZER_OFF();
         buzzer_on = false;
     } else if (loop_time >= 2000) {
