@@ -1,8 +1,8 @@
 #include <string.h>
 #include <xc.h>
 
-#include "canlib/canlib.h"
-#include "canlib/util/safe_ring_buffer.h"
+#include "canlib.h"
+#include "util/safe_ring_buffer.h"
 #include "timer.h"
 
 #include "altitude_parsing.h"

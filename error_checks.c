@@ -1,7 +1,8 @@
+#include "canlib.h"
+#include "timer.h"
+
 #include "error_checks.h"
 #include "setup.h"
-
-#include "timer.h"
 
 bool check_battery_voltage_overvoltage(void) {
     uint16_t batt1_voltage = (uint16_t)ADCC_GetSingleConversion(channel_BATTERY_1) * ANALOG_SCALAR;
@@ -49,27 +50,48 @@ bool check_bus_overcurrent_healthy(void) {
 static uint32_t loop_start_time = 0;
 static bool buzzer_on = false;
 void indicator_buzzer_heartbeat(void) {
-    // Each loop lasts BUZZER_HEARTBEAT_LOOP_LENGTH_ms
+	// Default: no buzzer
+	uint16_t buzzer_beep_ms = 0;
+	uint16_t buzzer_gap_ms = 0;
+	uint8_t buzzer_beep_count = 0;
+	uint16_t buzzer_period_ms = 0; // should be at least beep_count * (beep_ms + gap_ms)
+	
+	if (BOARD_INST_UNIQUE_ID == BOARD_INST_ID_ARMING_RA_STRATOLOGGER) {
+		buzzer_beep_ms = 200;
+		buzzer_gap_ms = 200;
+		buzzer_beep_count = 2;
+		buzzer_period_ms = 1200;
+	}
+	else if (BOARD_INST_UNIQUE_ID == BOARD_INST_ID_ARMING_RA_RAVEN) {
+		buzzer_beep_ms = 500;
+		buzzer_gap_ms = 1000;
+		buzzer_beep_count = 1;
+		buzzer_period_ms = 1500;
+	}
+    
+	// Each loop lasts buzzer_period_ms
     uint32_t time_in_current_loop = millis() - loop_start_time; // in ms
+
+    bool buzzer_should_be_on = false; // false means turn buzzer off
     
-    uint16_t buzzer_on_duration = mag1_active() ?
-        BUZZER_HEARTBEAT_LOOP_LENGTH_ms / 2 : // when mag1 active, 1000 ms on, 1000 off
-        BUZZER_HEARTBEAT_LOOP_LENGTH_ms / 10; // when mag1 not active, 200 ms on, 1800 off
+	if (mag1_active()) {
+		for (uint8_t i = 0; i < buzzer_beep_count; ++i) {
+			uint16_t beep_start_time = i * (buzzer_beep_ms + buzzer_gap_ms);
+			if (beep_start_time <= time_in_current_loop && time_in_current_loop < beep_start_time + buzzer_beep_ms) {
+				buzzer_should_be_on = true;
+			}
+		}
+	}
     
-    if (battery1_active()) {
-        if (!buzzer_on && time_in_current_loop <= buzzer_on_duration) {
-            BUZZER_ON();
-            buzzer_on = true;
-        } else if (buzzer_on && time_in_current_loop > buzzer_on_duration) {
-            BUZZER_OFF();
-            buzzer_on = false;
-        }
-    } else if (buzzer_on) {
+    if (buzzer_should_be_on && !buzzer_on) {
+        BUZZER_ON();
+        buzzer_on = true;
+    } else if (!buzzer_should_be_on && buzzer_on) {
         BUZZER_OFF();
         buzzer_on = false;
     }
     
-    if (time_in_current_loop >= BUZZER_HEARTBEAT_LOOP_LENGTH_ms) {
+    if (time_in_current_loop >= buzzer_period_ms) {
         loop_start_time = millis();
     }
 }

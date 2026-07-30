@@ -2,8 +2,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "rocketlib/include/timer.h"
-#include "canlib/canlib.h"
+#include "timer.h"
+#include "canlib.h"
 
 #include "altitude_parsing.h"
 #include "error_checks.h"
@@ -83,15 +83,15 @@ int main(int argc, char **argv) {
             // General Status Messages
             uint32_t status_bitfield = 0;
             if (check_battery_voltage_overvoltage()) {
-                status_bitfield |= (1 << E_BATT_OVER_VOLTAGE_OFFSET);
+                status_bitfield |= (1 << E_BATT_OVER_VOLT_OFFSET);
                 // FIXME: replace with a more appropriate message
             }
             if (check_battery_voltage_undervoltage()) {
-                status_bitfield |= (1 << E_BATT_UNDER_VOLTAGE_OFFSET);
+                status_bitfield |= (1 << E_BATT_UNDER_VOLT_OFFSET);
                 // FIXME: replace with a more appropriate message
             }
             if (!check_bus_overcurrent_healthy()) {
-                status_bitfield |= (1 << E_5V_OVER_CURRENT_OFFSET);
+                status_bitfield |= (1 << E_5V_OVER_CURR_OFFSET);
             }
             // TODO: CHECK IF Watch Dog timer window violation has occurred
             can_msg_t board_stat_msg;
