@@ -4,7 +4,7 @@
 #include <stdbool.h>
 
 #define MIN_BATTERY_THRESHOLD                                                                      \
-    2000 // in mV, the minimum voltage to recognize a battery as plugged in
+	2000 // in mV, the minimum voltage to recognize a battery as plugged in
 #define UNDERVOLTAGE_THRESHOLD 5000 // in mV
 #define OVERVOLTAGE_THRESHOLD 10000 // in mV
 #define BUS_OVERCURRENT_THRESHOLD 50 // in mA

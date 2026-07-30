@@ -18,8 +18,6 @@
 #define RED_LED_ON() (LATC7 = 0)
 #define RED_LED_OFF() (LATC7 = 1)
 
-
-
 // Buzzer
 #define BUZZER_ON() (LATB2 = 1)
 #define BUZZER_OFF() (LATB2 = 0)
